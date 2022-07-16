@@ -1,6 +1,6 @@
 # Core3-url
 
-Things To Do:- \n
-1]Expose API endpoints \n
-2] Connect to the Database \n
-3] Implement the encoding function \n
+Things To Do:- <br/>
+1]Expose API endpoints <br/>
+2] Connect to the Database <br/>
+3] Implement the encoding function <br/>
