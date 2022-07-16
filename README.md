@@ -6,6 +6,6 @@ Things To Do:- <br/>
 3] Implement the encoding function <br/>
 
 
-Run "sh setup.sh"
-Run "source venv/bin/activate"
-Run "pip3 install -r requirements.txt"
+Run "sh setup.sh" <br/>
+Run "source venv/bin/activate" <br/>
+Run "pip3 install -r requirements.txt" <br/>
