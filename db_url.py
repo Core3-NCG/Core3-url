@@ -1,4 +1,4 @@
-import mysql.connector
+import mysql.connector 
 from mysql.connector import errorcode
 import datetime
 
@@ -7,16 +7,17 @@ def make_conn():
     mydb=mysql.connector.connect(
         host="localhost",
         user="root",
-        passwd="root@123"
+        passwd="password",
+        auth_plugin='mysql_native_password'
     )
     DB_NAME='Tiny_URL'
     return mydb,DB_NAME
 
 
 # used to create the database
-def create_database(cursor):
+def create_database(cursor,DB_NAME):
     try:
-        my_cursor.execute(
+        cursor.execute(
             "CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(DB_NAME))
         print("hello")
     except mysql.connector.Error as err:
@@ -29,7 +30,7 @@ def databaseUsed(my_cursor,DB_NAME):
     except mysql.connector.Error as err:
         print("Database {} does not exists.".format(DB_NAME))
         if err.errno == errorcode.ER_BAD_DB_ERROR:
-            create_database(my_cursor)
+            create_database(my_cursor,DB_NAME)
             print("Database {} created successfully.".format(DB_NAME))
             mydb.database = DB_NAME
         else:
@@ -77,8 +78,7 @@ def createTable():
     my_cursor.close()
     mydb.close()
 
-#create all the table
-createTable()
+# createTable()
 
 # register the user and store username and pass in DB
 def register_user(userName,userPass):
@@ -109,7 +109,7 @@ def add_url(short_url,long_url,userName,expirationFlag,expirationTime):
         my_cursor.execute("INSERT INTO URLS (`shortened_url`,`actual_url`,`user_name`,`expiration_time_flag`,`clicks`) values (%s,%s,%s,%s,%s)",
         (short_url,long_url,userName,expirationFlag,0))
         my_cursor.execute("INSERT INTO Link_Expiration (`shortened_url`,`time_stamp`,`current_time`) values (%s,%s,%s)",
-        (shortened_url,expirationTime,expirationTime))
+        (short_url,expirationTime,expirationTime))
         mydb.commit()
         my_cursor.close()
         mydb.close()
@@ -130,6 +130,26 @@ def login_verification(userName,userPass):
     my_cursor.close()
     mydb.close()
     if verified and verified==userPass:
+        return True
+    else:
+        return False
+
+# Used to verify if the user exists 
+def check_if_user_exists(userName):
+    createConn=make_conn()
+    mydb=createConn[0]
+    DB_NAME=createConn[1]
+    my_cursor=mydb.cursor()
+    databaseUsed(my_cursor,DB_NAME)
+    my_cursor = mydb.cursor(buffered=True)
+    my_cursor.execute("select user_name from Users where user_name like %s",[userName])
+    username=""
+    for (a) in my_cursor:
+        username=a[0]
+    mydb.commit()
+    my_cursor.close()
+    mydb.close()
+    if  username :
         return True
     else:
         return False
@@ -177,3 +197,21 @@ def urls_for_user(user_name):
 # print(login_verification(name,passwd))
 # print(get_longurl("abcdc"))
 # print(urls_for_user("Anuj"))
+
+
+# conDetails = make_conn()
+# mydb=conDetails[0]
+# DB_NAME=conDetails[1]
+# my_cursor=mydb.cursor()
+# create_database(my_cursor,DB_NAME)
+# databaseUsed(my_cursor,DB_NAME)
+
+
+# register_user("Om","password")
+# hire_start=0
+# try:
+#     add_url("abcdc","www.anujkhare@gmail.com","Om",True,"")
+# except Exception as  error:
+#     if( "Duplicate entry" in str(error)):
+#         print("yeah man")
+#     print( error)
