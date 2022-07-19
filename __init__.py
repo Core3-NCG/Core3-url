@@ -25,7 +25,7 @@ def createShortenedUrl():
 def redirectToLongUrl(shortUrl):
     str long_url = get_longurl(shortUrl)
     # Call to get the long url from the db
-    if len(long_url)==0
+    if (len(long_url)==0):
         return redirect("/notfound/error/")
     else : 
         return redirect(url)
