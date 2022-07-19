@@ -28,7 +28,7 @@ def redirectToLongUrl(shortUrl):
     if (len(long_url)==0):
         return redirect("/notfound/error/")
     else : 
-        return redirect(url)
+        return redirect(long_url)
 
 if __name__ == "__main__":
     app.run(debug = True)
