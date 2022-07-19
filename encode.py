@@ -27,6 +27,5 @@ def shortURLToNum(shortURL):
 if (__name__ == "__main__"):
     id = randint(100000000,99999999999)
     shortURL = numToShortURL(id)
-    return shortURL
     #print("Short URL of", id, "is : ", shortURL)
     #print("ID from", shortURL, "is : ", shortURLToNum(shortURL))
