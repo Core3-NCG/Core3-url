@@ -1,0 +1,62 @@
+<div class="container" clrFocusOnViewInit>
+    <form clrForm [formGroup]="urlForm">
+        <h1>CreateUrl</h1>
+        <clr-input-container>
+            <label>Original URL</label>
+            <input type="text" name="originalUrl" formControlName="originalUrl" clrInput placeholder="enter url" />
+            <clr-control-error *ngIf="
+          this.urlForm.get('originalUrl')?.invalid &&
+          this.urlForm.get('originalUrl')?.touched
+        ">Please enter valid Url</clr-control-error>
+        </clr-input-container>
+        <clr-radio-container clrInline>
+            <label>Expiration Time</label>
+            <clr-radio-wrapper>
+                <input type="radio" clrRadio required value="Default" formControlName="expirationTimeType" />
+                <label>Default</label>
+            </clr-radio-wrapper>
+            <clr-radio-wrapper>
+                <input type="radio" clrRadio required value="Custom" formControlName="expirationTimeType" />
+                <label>Custom</label>
+            </clr-radio-wrapper>
+        </clr-radio-container>
+        <div class="CustomExpirationTime" *ngIf="this.urlForm.get('expirationTimeType')?.value === 'Custom'">
+            <clr-date-container>
+                <label>Expiration Date</label>
+                <input type="date" name="expirationDate" formControlName="expirationDate" clrDate />
+                <clr-control-error *ngIf="
+            this.urlForm.get('expirationDate')?.invalid &&
+            this.urlForm.get('expirationDate')?.touched
+          ">Please select valid date</clr-control-error>
+            </clr-date-container>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary" (click)="onSubmit()">
+            Create Short URL
+        </button>
+    </form>
+
+    <div clrForm *ngIf="isFormValid">
+        <clr-input-container>
+            <label>Shortened URL </label>
+            <input clrInput type="text" name="shortlUrl" #inputTarget
+                [value]="this.urlForm.get('originalUrl')?.value" />
+        </clr-input-container><br />
+        <button type="submit" class="btn btn-primary">
+            <label>
+                <clr-icon shape="copy-to-clipboard" [ngxClipboard]="inputTarget"></clr-icon>
+                Copy
+            </label>
+        </button>
+        <button type="submit" class="btn btn-primary" (click)="redirect()">
+            <label>
+                <clr-icon shape="redo"></clr-icon> Redirect
+            </label>
+        </button>
+        <button type="submit" class="btn btn-primary" (click)="share()">
+            <label>
+                <clr-icon shape="share"></clr-icon> share
+            </label>
+        </button>
+    </div>
+</div>

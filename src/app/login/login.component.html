@@ -1,0 +1,22 @@
+<div class="login-wrapper">
+    <form class="login" [formGroup]="loginForm">
+        <section class="title">
+            <h3 class="welcome">User Login</h3>
+        </section>
+        <div class="login-group">
+            <clr-input-container>
+                <label class="clr-sr-only">Username</label>
+                <input type="text" name="username" clrInput placeholder="Username" formControlName="userName" />
+            </clr-input-container>
+            <clr-password-container>
+                <label class="clr-sr-only">Password</label>
+                <input type="password" name="password" clrPassword placeholder="Password" formControlName="password" />
+            </clr-password-container>
+            <div *ngIf="this.loginForm.invalid && this.loginForm.touched" class="error active">
+                Invalid user name or password
+            </div>
+            <button type="submit" class="btn btn-primary" (click)="onSubmit()">NEXT</button>
+            <a routerLink='/Register' class="signup">Sign up for a Company ID</a>
+        </div>
+    </form>
+</div>
