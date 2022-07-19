@@ -25,6 +25,19 @@ def createShortenedUrl(longUrl,time=False):
     
     return shortenedUrl
 
+@app.route("/short/<shortUrl>/")
+def redirectToLongUrl(shortUrl):
+    key = shortURLToNum(shortUrl)
+    key = str(key)
+    # Call to get the long url from the db
+    data = read_from_json()
+    if key in data.keys():
+        url = data[key]["url"]
+        return redirect(url)
+    else : 
+        return redirect("/notfound/error/")
+        
+
 
 if __name__ == "__main__":
     app.run(debug = True)
