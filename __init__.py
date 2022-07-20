@@ -30,10 +30,11 @@ def createShortenedUrl():
 @app.route("/<shortUrl>")
 def redirectToLongUrl(shortUrl):
     long_url = service.getLongUrl(shortUrl)
-    if(long_url==""):
-        return ("Page not found",404)
 
-    return redirect(long_url,code=302)
+    if (len(long_url)==0):
+        return ("Page Not Found",404)
+    else : 
+        return redirect(long_url)
 
 
 @app.route("/myUrls")
