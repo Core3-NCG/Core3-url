@@ -182,7 +182,7 @@ def urls_for_user(user_name):
     my_cursor.execute("select * from URLS where user_name like %s",[user_name])
     all_list=[]
     for a in my_cursor:
-        all_list.append(a[2])
+        all_list.append(a)
     mydb.commit()
     my_cursor.close()
     mydb.close()
