@@ -36,11 +36,11 @@
         </button>
     </form>
 
-    <div clrForm *ngIf="isFormValid">
+    <div clrForm *ngIf="isFormValid && long_url!=''">
         <clr-input-container>
             <label>Shortened URL </label>
             <input clrInput type="text" name="shortlUrl" #inputTarget
-                [value]="this.urlForm.get('originalUrl')?.value" />
+                value="{{long_url}}" />
         </clr-input-container><br />
         <button type="submit" class="btn btn-primary">
             <label>

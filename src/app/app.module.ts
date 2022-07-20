@@ -12,6 +12,7 @@ import { MyUrlsComponent } from './my-urls/my-urls.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ClipboardModule } from 'ngx-clipboard';
 import { RegistrationComponent } from './registration/registration.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { RegistrationComponent } from './registration/registration.component';
     ClarityModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
-    ClipboardModule
+    ClipboardModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

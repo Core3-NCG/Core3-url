@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ClipboardService } from 'ngx-clipboard';
+import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-create-short-url',
@@ -11,12 +13,13 @@ export class CreateShortUrlComponent implements OnInit {
   urlForm:FormGroup;
   isFormValid:boolean = false;
   urlRegExp:string = '(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?';
+  long_url:string='';
 
-  constructor(private fb:FormBuilder,private cp:ClipboardService) {
+  constructor(private fb:FormBuilder,private cp:ClipboardService, private httpClient:HttpClient) {
     this.urlForm= this.fb.group({
       originalUrl:['',[Validators.required,Validators.pattern(this.urlRegExp)]],
       expirationTimeType:['Default',Validators.required],
-      expirationDate:['',Validators.required],
+      expirationDate:['',Validators.required]
     });
    }
 
@@ -26,11 +29,60 @@ export class CreateShortUrlComponent implements OnInit {
 
   onSubmit(){
     this.urlForm.get('originalUrl')?.invalid
-    console.log(this.urlForm);
     this.isFormValid = true;
+    
+    /**
+     * Checking if this URL is in the local storage
+     */
+    if(localStorage.getItem(this.urlForm.get("originalUrl")?.value)){
+      this.long_url =  localStorage.getItem(this.urlForm.get("originalUrl")?.value)!;
+      return;
+    }
+
+    let link ="http://127.0.0.1:5000/shortenUrl?"+"user="+localStorage.getItem("userName")+"&url="+this.urlForm.get("originalUrl")?.value;
+    this.getRequest(link);
   }
 
-  redirect(){
+
+  async getRequest(link:string){
+    let promiseToExecuteRequest = new Promise((resolve, reject) =>{
+      const res =this.httpClient.get(link,{responseType: 'text'})
+        .subscribe(result=> {
+          /**
+           * getting the result 
+           * from the subscription 
+           * and resolving the same
+          */
+          resolve(result)
+        });
+
+      /**
+       * setting timeout to 3 second
+       * indicating failure of request execution
+       */
+      setTimeout(function() {
+        reject(); 
+      }, 3000);
+    });
+
+    await promiseToExecuteRequest
+      .then((result) =>{
+
+        this.long_url=typeof result == 'string' ? result: "Something went wrong" ;
+  
+        /**
+         * storing the shortened url in local storage
+         */
+        localStorage.setItem(this.urlForm.get("originalUrl")?.value,this.long_url);
+
+      })
+      .catch(() =>{
+        this.long_url= "Something went wrong" ;
+      });
+  }
+
+
+  redirect() {
    const url = this.urlForm.get('originalUrl')?.value;
     window.open(url,'_blank');
   }
