@@ -9,3 +9,4 @@ MySQL-connector-python==8.0.29
 SQLAlchemy==1.4.39
 Werkzeug==2.1.2
 zipp==3.8.1
+Flask-Cors==3.0.10
