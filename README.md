@@ -1,11 +1,23 @@
 # Core3-url
 
-Things To Do:- <br/>
-1]Expose API endpoints <br/>
-2] Connect to the Database <br/>
-3] Implement the encoding function <br/>
+## Steps to setup the environment:-
+```
+sh setup.sh
+sudo source venv/bin/activate
+pip3 install -r requirements.txt
+brew install redis
+redis-server
+```
+
+### Fill in the MySQL Database credentials in the "src/constants.py" file
 
 
-Run "sh setup.sh" <br/>
-Run "source venv/bin/activate" <br/>
-Run "pip3 install -r requirements.txt" <br/>
+## Run the application:-
+```
+python3 src/app.py
+```
+
+## Run the tests:-
+```
+python3 test/api_test.py
+```
