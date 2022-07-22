@@ -22,7 +22,7 @@ def createShortenedUrl():
     longUrl = request.args.get("url")
     time = request.args.get("time")
     if user == None:
-        return ("user parameter required",constants.NOT_FOUND)
+        return ("user parameter required",constants.BAD_REQUEST)
     response = service.buildShortURL(longUrl,time,user)
     return response
 
