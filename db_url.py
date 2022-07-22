@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import errorcode
 import datetime
 import redis
+from sqlalchemy import DateTime
 
 
 #use to make connection
@@ -56,17 +57,11 @@ def createTable():
         "PRIMARY KEY (`user_name`))ENGINE=INNODB")
 
     TABLES['URLS']=("create table `URLS` ( `shortened_url` varchar(255) NOT NULL,"
-        "`user_name` varchar(255),"
         "`actual_url` varchar(255) NOT NULL,"
-        "`expiration_time_flag` boolean,"
-        "`clicks` int NOT NULL,"
+        "`user_name` varchar(255),"
+        "`expiration_time` Date NOT NULL,"
         "PRIMARY KEY (`shortened_url`),"
         "FOREIGN KEY (`user_name`) REFERENCES Users(`user_name`) ON UPDATE CASCADE ON DELETE CASCADE)ENGINE=INNODB")
-        
-    TABLES['Link_Expiration']=("create table `Link_Expiration` ( `shortened_url` varchar(255) NOT NULL,"
-        "`time_stamp` date NOT NULL,"
-        "`current_time` date NOT NULL,"
-        "FOREIGN KEY (`shortened_url`) REFERENCES URLS(`shortened_url`) ON UPDATE CASCADE ON DELETE CASCADE)ENGINE=INNODB")
 
     for table_name in TABLES:
         table_description = TABLES[table_name]
@@ -104,27 +99,18 @@ def register_user(userName,userPass):
         return False
 
 # Add the shortened URl, long_url, username if provided,expiration flag, and expiration time based on flag in the DB 
-def add_url(short_url,long_url,userName,expirationFlag,expirationTime):
+def add_url(short_url,long_url,userName,expirationTime):
     try:
         createConn=make_conn()
         mydb=createConn[0]
         DB_NAME=createConn[1]
         my_cursor=mydb.cursor()
         databaseUsed(my_cursor,DB_NAME)
-        if expirationFlag==False:
-            my_cursor.execute("INSERT INTO URLS (`shortened_url`,`actual_url`,`user_name`,`expiration_time_flag`,`clicks`) values (%s,%s,%s,%s,%s)",
-            (short_url,long_url,userName,expirationFlag,0))
-            mydb.commit()
-            my_cursor.close()
-            mydb.close()
-        else:
-            my_cursor.execute("INSERT INTO URLS (`shortened_url`,`actual_url`,`user_name`,`expiration_time_flag`,`clicks`) values (%s,%s,%s,%s,%s)",
-            (short_url,long_url,userName,expirationFlag,0))
-            my_cursor.execute("INSERT INTO Link_Expiration (`shortened_url`,`time_stamp`,`current_time`) values (%s,%s,%s)",
-            (short_url,expirationTime,expirationTime))
-            mydb.commit()
-            my_cursor.close()
-            mydb.close()
+        my_cursor.execute("INSERT INTO URLS (`shortened_url`,`actual_url`,`user_name`,`expiration_time`) values (%s,%s,%s,%s)",
+        (short_url,long_url,userName,expirationTime))
+        mydb.commit()
+        my_cursor.close()
+        mydb.close()
     except:
         print("Same url should not exist")
 
@@ -170,12 +156,18 @@ def get_longurl(short_url):
             my_cursor = mydb.cursor(buffered=True)
             my_cursor.execute("select * from URLS where shortened_url like %s",[short_url])
             long_url=""
+            current_date=datetime.date.today()
             for a in my_cursor:
-                long_url=a[2]
+                print(a[3].day-current_date.day)
+                if a[3]<current_date:
+                    my_cursor.execute("delete from URLS where shortened_url like %s",[a[1]])
+                    print("expired date deleted")
+                    continue
+                long_url=a[1]
             mydb.commit()
             my_cursor.close()
             mydb.close()
-            redis1.set(name=short_url,value=long_url,ex=3600)
+            redis1.set(name=short_url,value=long_url,ex=3)
             return long_url
     except:
         print("URL doesn't exist")
@@ -190,21 +182,29 @@ def urls_for_user(user_name):
     databaseUsed(my_cursor,DB_NAME)
     my_cursor = mydb.cursor(buffered=True)
     my_cursor.execute("select * from URLS where user_name like %s",[user_name])
-    all_list=[]
+    all_url_list=[]
+    current_date=datetime.date.today()
     for a in my_cursor:
-        all_list.append(a[2])
+        current_url_list=[]
+        if a[3]<current_date:
+            my_cursor.execute("delete from URLS where shortened_url like %s",[a[0]])
+            print("expired date deleted")
+            continue
+        current_url_list.append(a[1])
+        current_url_list.append(a[3].day-current_date.day)
+        all_url_list.append(current_url_list)
     mydb.commit()
     my_cursor.close()
     mydb.close()
-    return all_list
+    return all_url_list
 
 
 # name="Anuj"
 # passwd="Anujk"
-# # register_user(name,passwd)
-# hire_start = datetime.date(1999, 1, 1)
+# register_user(name,passwd)
+# hire_start = datetime.date(2022,7,29)
 # # hire_start=0
-# add_url("abcd","www.anujkhare@gmail.com","Anuj",False,hire_start)
+# add_url("abv","www.anuj999khare@gmail.com","Anuj",hire_start)
 # print(login_verification(name,passwd))
-# print(get_longurl("abcd"))
+# print(get_longurl("abcdfg"))
 # print(urls_for_user("Anuj"))
