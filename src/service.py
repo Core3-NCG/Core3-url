@@ -1,66 +1,91 @@
+from asyncio import constants
 from random import randint
-from tkinter import E
 import encode as en
+import constants
 import db_url as db
 from datetime import datetime
+import bcrypt
 
+"""
+Function to build the short URL
+by looping to generate 
+a unique key to avoid collisions
+"""
 def buildShortURL(longUrl,time,user):
-    uniqueEncoding=""
+    uniqueEncoding = ""
     while(True):
         randKey = randint(100000000,99999999999)
         uniqueEncoding = en.numToShortURL(randKey)
         
-        if not db.check_if_user_exists(user):
-            return "User does not exist",400
+        # To check if user exists
+        status =  db.check_if_user_exists(user)
 
-        # Call to add url to the db
-        try:
-            if time!=None:
-                dt_object = datetime.strptime(time, '%Y-%m-%d')
-                db.add_url(uniqueEncoding,longUrl,user,True,dt_object)
-            else:
-                db.add_url(uniqueEncoding,longUrl,user,False,0)
+        if( status == constants.BAD_REQUEST):
+            return ("User does not exist",constants.BAD_REQUEST)
+        elif( status == constants.INTERNAL_SERVER_ERROR):
+            return ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR)
+            
+        if time != None and time!= "": 
+            dt_object = datetime.strptime(time, '%m/%d/%Y')
+            status = db.add_url(uniqueEncoding,longUrl,user,True,dt_object.date())
+        else:
+            status = db.add_url(uniqueEncoding,longUrl,user,False,0)
+        
+        if(status == constants.DUPLICATE_ERROR):
+            continue
+        elif(status == constants.INTERNAL_SERVER_ERROR):
+            return ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR)
 
-        except Exception as  error:
-            if( "Duplicate entry" in str(error)):
-                continue
-            return None,500
+        url = "http://"+constants.SERVER_URL+"/"+uniqueEncoding
+        return (url,constants.OK)
 
-        return uniqueEncoding,200
-
-
+"""
+Function to get the 
+original url to redirect to
+"""
 def getLongUrl(key):
-    longUrl = db.get_longurl(key)
-    return longUrl
+    longUrl,status = db.get_longurl(key)
+    if(longUrl):
+        return longUrl
+    if(status == constants.INTERNAL_SERVER_ERROR):
+        return ("Something went wrong, try again later ",constants.INTERNAL_SERVER_ERROR)
+    return ("Page Not Found",constants.NOT_FOUND)
 
-
+"""
+Function to get the 
+list of all the URLs
+for a particular user
+"""
 def getUrlList(user):
-    urlList = db.urls_for_user(user)
-    modified_list=[]
+    urlList,status = db.urls_for_user(user)
+    if(status == constants.INTERNAL_SERVER_ERROR):
+        return ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR)
+    modified_list = []
     for url in urlList:
-        l=[url[0],url[2]]
-        l[0]="http://127.0.0.1:5000/"+url[0]
-        modified_list.append(l)
+        short_and_original_urls = [url[0],url[2]]
+        short_and_original_urls[0] = "http://"+constants.SERVER_URL+"/"+url[0]
+        modified_list.append(short_and_original_urls)
     
     return modified_list
 
+
 def registerUser(username,password):
-    try:
-        db.register_user(username,password)
-        return ("Registered User "+username,200)
-    except Exception as error:
-        if("Duplicate entry" in str(error)):
-            return ("User already exists",409)
-        else:
-            return ("Something went wrong, try again later",500)
+    salt =  bcrypt.gensalt()
+    password  = bcrypt.hashpw(password.encode("utf-8"),salt)
+    status = db.register_user(username,password)
+    switcher = {
+    200: ("Registered User "+username,constants.OK),
+    409: ("User already exists",constants.DUPLICATE_ERROR),
+    500: ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR),
+    }
+    return switcher.get(status)
 
 def loginUser(username,password):
-    try:
-        userPresent = db.login_verification(username,password)
-        if(userPresent):
-            return ("Login Successful",200)
-        else:
-            return ("Wrong credentials, login failed",401)
-    except Exception as error:
-        return ("Something went wrong, try again later",500)
+    userPresent = db.login_verification(username,password)
+    switcher = {
+    200: ("Login Successful",constants.OK),
+    401: ("Wrong credentials, login failed",constants.AUTHENTICATION_ERROR),
+    500: ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR),
+    }
+    return switcher.get(userPresent)
     
