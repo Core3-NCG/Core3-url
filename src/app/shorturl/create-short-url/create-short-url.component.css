@@ -1,0 +1,9 @@
+.clr-input {
+  width: 300px;
+}
+.readonlyInput {
+  border: 0;
+  border-radius: 0;
+  border-bottom: 0.05rem solid;
+  border-bottom-color: #6a7a81;
+}

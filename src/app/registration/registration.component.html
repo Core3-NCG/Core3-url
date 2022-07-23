@@ -1,31 +1,67 @@
 <div class="login-wrapper">
-    <form class="login" [formGroup]="registerForm">
-        <section class="title">
-            <h3 class="welcome">User Register</h3>
-        </section>
-        <div class="login-group">
-            <clr-input-container>
-                <label class="clr-sr-only">Username</label>
-                <input type="text" name="username" clrInput placeholder="Username" formControlName="userName" />
-                <clr-control-error *ngIf="this.registerForm.get('userName')?.invalid && this.registerForm.get('userName')?.touched
-                ">Please provide valid username</clr-control-error>
-            </clr-input-container>
-            <clr-password-container>
-                <label class="clr-sr-only">Password</label>
-                <input type="password" name="password" clrPassword placeholder="Password" formControlName="password" />
-                <clr-control-error *ngIf="this.registerForm.get('password')?.invalid && this.registerForm.get('password')?.touched
-                ">Please provide strong password</clr-control-error>
-            </clr-password-container>
-            <clr-password-container>
-                <label class="clr-sr-only">Password</label>
-                <input type="password" name="password" clrPassword placeholder="Password"
-                    formControlName="confirmpassword" />
-            </clr-password-container>
-            <div *ngIf="this.registerForm.invalid && this.registerForm.touched" class="error active">
-                Invalid user name or password
-            </div>
-            <button type="submit" [disabled]="this.registerForm.invalid" class="btn btn-primary"
-                (click)="onSubmit()">Register</button>
-        </div>
-    </form>
+  <form class="login" [formGroup]="registerForm">
+    <section class="title">
+      <h3 class="welcome">User Register</h3>
+    </section>
+    <div class="login-group">
+      <clr-input-container>
+        <label class="clr-sr-only">Username</label>
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          formControlName="userName"
+          clrInput
+        />
+        <clr-control-error
+          *ngIf="
+            this.registerForm.get('username')?.invalid &&
+            this.registerForm.get('username')?.touched
+          "
+          >Please provide valid username</clr-control-error
+        >
+      </clr-input-container>
+      <clr-password-container>
+        <label class="clr-sr-only">Password</label>
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          formControlName="password"
+          clrPassword
+        />
+        <clr-control-error
+          *ngIf="
+            this.registerForm.get('password')?.invalid &&
+            this.registerForm.get('password')?.touched
+          "
+          >Please provide strong password</clr-control-error
+        >
+      </clr-password-container>
+      <clr-password-container>
+        <label class="clr-sr-only">Password</label>
+        <input
+          type="password"
+          name="password"
+          clrPassword
+          placeholder="Confirm Password"
+          formControlName="confirmpassword"
+        />
+      </clr-password-container>
+      <div *ngIf="this.registerForm.invalid" class="error active">
+        Do check confirrm password and password fields
+      </div>
+      <button
+        type="submit"
+        [disabled]="this.registerForm.invalid"
+        class="btn btn-primary"
+        (click)="onSubmit()"
+      >
+        REGISTER
+      </button>
+      <button type="submit" class="btn btn-outline" routerLink="/login">
+        LOGIN
+      </button>
+    </div>
+  </form>
 </div>

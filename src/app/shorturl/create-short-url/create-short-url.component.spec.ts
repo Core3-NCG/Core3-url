@@ -8,9 +8,8 @@ describe('CreateShortUrlComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CreateShortUrlComponent ]
-    })
-    .compileComponents();
+      declarations: [CreateShortUrlComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

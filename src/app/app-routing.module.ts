@@ -1,26 +1,30 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CreateShortUrlComponent } from './create-short-url/create-short-url.component';
+import { AuthGuard } from './auth.guard';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
-import { MyUrlsComponent } from './my-urls/my-urls.component';
 import { RegistrationComponent } from './registration/registration.component';
+import { CreateShortUrlComponent } from './shorturl/create-short-url/create-short-url.component';
+import { MyUrlsComponent } from './shorturl/my-urls/my-urls.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'Register', component: RegistrationComponent },
+  { path: 'register', component: RegistrationComponent },
   {
-    path: 'Home', component: HomeComponent,
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [AuthGuard],
     children: [
-      { path: 'CreateUrl', component: CreateShortUrlComponent }
-      , { path: 'MyUrls', component: MyUrlsComponent },
-    ]
+      {path:'',component:CreateShortUrlComponent},
+      { path: 'createurl', component: CreateShortUrlComponent },
+      { path: 'myurls', component: MyUrlsComponent },
+    ],
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

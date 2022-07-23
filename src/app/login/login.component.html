@@ -1,22 +1,55 @@
 <div class="login-wrapper">
-    <form class="login" [formGroup]="loginForm">
-        <section class="title">
-            <h3 class="welcome">User Login</h3>
-        </section>
-        <div class="login-group">
-            <clr-input-container>
-                <label class="clr-sr-only">Username</label>
-                <input type="text" name="username" clrInput placeholder="Username" formControlName="userName" />
-            </clr-input-container>
-            <clr-password-container>
-                <label class="clr-sr-only">Password</label>
-                <input type="password" name="password" clrPassword placeholder="Password" formControlName="password" />
-            </clr-password-container>
-            <div *ngIf="this.loginForm.invalid && this.loginForm.touched" class="error active">
-                Invalid user name or password
-            </div>
-            <button type="submit" class="btn btn-primary" (click)="onSubmit()">NEXT</button>
-            <a routerLink='/Register' class="signup">Sign up for a Company ID</a>
-        </div>
-    </form>
+  <form class="login" clrLayout="vertical" [formGroup]="loginForm">
+    <section class="title">
+      <h3 class="welcome">Welcome to</h3>
+      <span>ShortUrl App</span>
+    </section>
+    <div class="login-group">
+      <clr-input-container>
+        <label class="clr-sr-only">Username</label>
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          formControlName="username"
+          clrInput
+        />
+      </clr-input-container>
+      <clr-password-container>
+        <label class="clr-sr-only">Password</label>
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          formControlName="password"
+          clrPassword
+        />
+      </clr-password-container>
+      <div
+        *ngIf="
+          this.loginForm.invalid &&
+          this.loginForm.dirty && this.loginForm.touched
+        "
+        class="error active"
+      >
+        Invalid user name or password
+      </div>
+      <button
+        type="submit"
+        class="btn btn-primary clr-no-gutters"
+        [clrLoading]="isLoading"
+        [disabled]="this.loginForm.invalid"
+        (click)="onSubmit()"
+      >
+        LOGIN
+      </button>
+      <button
+        type="submit"
+        class="btn btn-outline clr-no-gutters"
+        routerLink="/register"
+      >
+        REGISTER
+      </button>
+    </div>
+  </form>
 </div>

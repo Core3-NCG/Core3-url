@@ -1,0 +1,109 @@
+import { Component, OnInit } from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
+import { ClipboardService } from 'ngx-clipboard';
+import { HttpClient } from '@angular/common/http';
+import { UrlService } from '../services/url.service';
+import { Constants } from 'src/app/constants/constants';
+
+@Component({
+  selector: 'app-create-short-url',
+  templateUrl: './create-short-url.component.html',
+  styleUrls: ['./create-short-url.component.css'],
+})
+export class CreateShortUrlComponent implements OnInit {
+  urlForm: FormGroup;
+  isFormValid: boolean = false;
+  isLoading: boolean = false;
+  shortUrl: string = '';
+
+  constructor(
+    private _formBuilder: FormBuilder,
+    private _clipboardService: ClipboardService,
+    private _httpClient: HttpClient,
+    private _urlService: UrlService
+  ) {
+    this.urlForm = this._formBuilder.group({
+      originalUrl: [
+        '',
+        [Validators.required, Validators.pattern(Constants.urlRegExp)],
+      ],
+      expirationTimeType: ['Default', Validators.required],
+      expirationDate: [''],
+    });
+  }
+
+  ngOnInit(): void {
+    this.urlForm.get('expirationTimeType')?.valueChanges.subscribe(() => {
+      this.onexpirationTimeTypeChanges();
+    });
+    this.urlForm.valueChanges.subscribe(() => {
+      this.isFormValid = false;
+    });
+  }
+
+  onSubmit() {
+    this.isFormValid = true;
+    this.isLoading = true;
+    if (localStorage.getItem(this.urlForm.get('originalUrl')?.value)) {
+      this.shortUrl = localStorage.getItem(
+        this.urlForm.get('originalUrl')?.value
+      )!;
+    } else {
+      this._urlService
+        .createShortUrl(this.urlForm.get('originalUrl')?.value)
+        .subscribe((url) => {
+          this.shortUrl = url;
+          this.shortUrl =
+            this.shortUrl == '' ? 'Something went wrong' : this.shortUrl;
+          localStorage.setItem(
+            this.urlForm.get('originalUrl')?.value,
+            this.shortUrl
+          );
+        });
+    }
+    this.isLoading = false;
+    this.resetForm();
+  }
+
+  resetForm() {
+    this.urlForm.reset({
+      originalUrl: '',
+      expirationTimeType: '',
+      expirationDate: '',
+    });
+  }
+
+  redirect() {
+    const url = this.shortUrl;
+    window.open(url, '_blank');
+  }
+
+  onexpirationTimeTypeChanges() {
+    const expirationTimeTypeSelected =
+      this.urlForm.get('expirationTimeType')?.value;
+    if (expirationTimeTypeSelected === 'Custom') {
+      this.urlForm.get('expirationDate')?.setValidators(this.dateValidator());
+    } else {
+      this.urlForm.get('expirationDate')?.clearValidators();
+    }
+  }
+
+  dateValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control?.value) {
+        return { date: 'please select valid date' };
+      }
+      const expirationDate = new Date(control?.value);
+      const currentDate = new Date();
+      const isInvalidDate = expirationDate < currentDate;
+      return isInvalidDate ? { date: 'please select valid date' } : null;
+    };
+  }
+}

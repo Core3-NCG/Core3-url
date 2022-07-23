@@ -1,18 +1,20 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ClarityModule } from '@clr/angular';
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
-import { CreateShortUrlComponent } from './create-short-url/create-short-url.component';
-import { MyUrlsComponent } from './my-urls/my-urls.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ClipboardModule } from 'ngx-clipboard';
 import { RegistrationComponent } from './registration/registration.component';
 import { HttpClientModule } from '@angular/common/http';
+import { AuthGuard } from './auth.guard';
+import { CreateShortUrlComponent } from './shorturl/create-short-url/create-short-url.component';
+import { MyUrlsComponent } from './shorturl/my-urls/my-urls.component';
+import { UrldetailsComponent } from './shorturl/urldetails/urldetails.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,8 @@ import { HttpClientModule } from '@angular/common/http';
     HomeComponent,
     CreateShortUrlComponent,
     MyUrlsComponent,
-    RegistrationComponent
+    UrldetailsComponent,
+    RegistrationComponent,
   ],
   imports: [
     BrowserModule,
@@ -30,9 +33,9 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserAnimationsModule,
     ReactiveFormsModule,
     ClipboardModule,
-    HttpClientModule
+    HttpClientModule,
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [AuthGuard],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
