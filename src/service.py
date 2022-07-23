@@ -3,7 +3,7 @@ from random import randint
 import encode as en
 import constants
 import db_url as db
-from datetime import datetime
+import datetime
 import bcrypt
 
 """
@@ -11,7 +11,7 @@ Function to build the short URL
 by looping to generate 
 a unique key to avoid collisions
 """
-def buildShortURL(longUrl,time,user):
+def buildShortURL(longUrl,expiryDate,user):
     uniqueEncoding = ""
     while(True):
         randKey = randint(100000000,99999999999)
@@ -24,12 +24,13 @@ def buildShortURL(longUrl,time,user):
             return ("User does not exist",constants.BAD_REQUEST)
         elif( status == constants.INTERNAL_SERVER_ERROR):
             return ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR)
-            
-        if time != None and time!= "": 
-            dt_object = datetime.strptime(time, '%m/%d/%Y')
-            status = db.add_url(uniqueEncoding,longUrl,user,True,dt_object.date())
+
+        if expiryDate == None or expiryDate == "":
+            expiryDate = datetime.date.today()+datetime.timedelta(days=3)
         else:
-            status = db.add_url(uniqueEncoding,longUrl,user,False,0)
+            expiryDate = datetime.datetime.strptime(expiryDate, '%m/%d/%Y')
+            expiryDate = expiryDate.date()
+        status = db.add_url(uniqueEncoding,longUrl,user,expiryDate)
         
         if(status == constants.DUPLICATE_ERROR):
             continue
@@ -45,6 +46,7 @@ original url to redirect to
 """
 def getLongUrl(key):
     longUrl,status = db.get_longurl(key)
+    print(longUrl)
     if(longUrl):
         return longUrl
     if(status == constants.INTERNAL_SERVER_ERROR):
@@ -57,16 +59,23 @@ list of all the URLs
 for a particular user
 """
 def getUrlList(user):
+
+    status =  db.check_if_user_exists(user)
+    if( status == constants.BAD_REQUEST):
+        return ("User does not exist",constants.BAD_REQUEST)
+    elif( status == constants.INTERNAL_SERVER_ERROR):
+        return ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR)
+
     urlList,status = db.urls_for_user(user)
     if(status == constants.INTERNAL_SERVER_ERROR):
         return ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR)
-    modified_list = []
+    myUrlDict = {}
     for url in urlList:
-        short_and_original_urls = [url[0],url[2]]
-        short_and_original_urls[0] = "http://"+constants.SERVER_URL+"/"+url[0]
-        modified_list.append(short_and_original_urls)
+        myUrlDict[ "http://"+constants.SERVER_URL+"/"+url[0]] = {}
+        myUrlDict[ "http://"+constants.SERVER_URL+"/"+url[0]]["originalUrl"] = url[1]
+        myUrlDict[ "http://"+constants.SERVER_URL+"/"+url[0]]["daysLeft"] = url[2]
     
-    return modified_list
+    return myUrlDict
 
 
 def registerUser(username,password):
@@ -88,4 +97,3 @@ def loginUser(username,password):
     500: ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR),
     }
     return switcher.get(userPresent)
-    
