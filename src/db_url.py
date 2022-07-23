@@ -3,6 +3,7 @@ from mysql.connector import errorcode
 import constants
 import redis
 import bcrypt
+import datetime
 
 #use to make connection
 def make_conn():
@@ -52,22 +53,17 @@ def createTable():
     databaseUsed(my_cursor,DB_NAME)
 
     TABLES = {}
+    TABLES = {}
     TABLES['Users']=("create table `Users` (`user_name` varchar(255) NOT NULL,"
         "`user_pass` varchar(255) NOT NULL,"
         "PRIMARY KEY (`user_name`))ENGINE=INNODB")
 
     TABLES['URLS']=("create table `URLS` ( `shortened_url` varchar(255) NOT NULL,"
-        "`user_name` varchar(255),"
         "`actual_url` varchar(255) NOT NULL,"
-        "`expiration_time_flag` boolean,"
-        "`clicks` int NOT NULL,"
+        "`user_name` varchar(255),"
+        "`expiration_time` Date NOT NULL,"
         "PRIMARY KEY (`shortened_url`),"
         "FOREIGN KEY (`user_name`) REFERENCES Users(`user_name`) ON UPDATE CASCADE ON DELETE CASCADE)ENGINE=INNODB")
-        
-    TABLES['Link_Expiration']=("create table `Link_Expiration` ( `shortened_url` varchar(255) NOT NULL,"
-        "`time_stamp` date NOT NULL,"
-        "`current_time` date NOT NULL,"
-        "FOREIGN KEY (`shortened_url`) REFERENCES URLS(`shortened_url`) ON UPDATE CASCADE ON DELETE CASCADE)ENGINE=INNODB")
 
     for table_name in TABLES:
         table_description = TABLES[table_name]
@@ -99,17 +95,11 @@ def register_user(userName,userPass):
         return constants.INTERNAL_SERVER_ERROR
 
 # Add the shortened URl, long_url, username if provided,expiration flag, and expiration time based on flag in the DB 
-def add_url(short_url,long_url,userName,expirationFlag,expirationTime):
+def add_url(short_url,long_url,userName,expirationTime):
     try:
         my_cursor,mydb = establish_mysql_connection()
-        if expirationFlag==False:
-            my_cursor.execute("INSERT INTO URLS (`shortened_url`,`actual_url`,`user_name`,`expiration_time_flag`,`clicks`) values (%s,%s,%s,%s,%s)",
-            (short_url,long_url,userName,expirationFlag,0))
-        else:
-            my_cursor.execute("INSERT INTO URLS (`shortened_url`,`actual_url`,`user_name`,`expiration_time_flag`,`clicks`) values (%s,%s,%s,%s,%s)",
-            (short_url,long_url,userName,expirationFlag,0))
-            my_cursor.execute("INSERT INTO Link_Expiration (`shortened_url`,`time_stamp`,`current_time`) values (%s,%s,%s)",
-            (short_url,expirationTime,expirationTime))
+        my_cursor.execute("INSERT INTO URLS (`shortened_url`,`actual_url`,`user_name`,`expiration_time`) values (%s,%s,%s,%s)",
+        (short_url,long_url,userName,expirationTime))
         close_mysql_connection(my_cursor,mydb)
         return constants.OK
     except Exception as error:
@@ -158,12 +148,16 @@ def get_longurl(short_url):
         redisDB=connect_redis()
         if redisDB.get(short_url):
             print("return from cache")
-            return [redisDB.get(short_url).decode(),200]
+            return [redisDB.get(short_url).decode(),constants.OK]
         my_cursor,mydb = establish_mysql_connection()
         my_cursor.execute("select * from URLS where shortened_url like %s",[short_url])
         long_url=""
+        current_date=datetime.date.today()
         for a in my_cursor:
-            long_url=a[2]
+            if a[3]<current_date:
+                my_cursor.execute("delete from URLS where shortened_url like %s",[a[0]])
+                continue
+            long_url=a[1]
         close_mysql_connection(my_cursor,mydb)
         redisDB.set(name=short_url,value=long_url,ex = constants.CACHE_EXPIRY)
         return [long_url,constants.OK]
@@ -175,11 +169,20 @@ def urls_for_user(user_name):
     try:
         my_cursor,mydb = establish_mysql_connection()
         my_cursor.execute("select * from URLS where user_name like %s",[user_name])
-        all_list=[]
+        all_url_list=[]
+        current_date=datetime.date.today()
         for a in my_cursor:
-            all_list.append(a)
+            current_url_list=[]
+            if a[3]<current_date:
+                my_cursor.execute("delete from URLS where shortened_url like %s",[a[0]])
+                print("expired date deleted")
+                continue
+            current_url_list.append(a[0])
+            current_url_list.append(a[1])
+            current_url_list.append((a[3]-current_date).days)
+            all_url_list.append(current_url_list)
         close_mysql_connection(my_cursor,mydb)
-        return [all_list,constants.OK]
+        return [all_url_list,constants.OK]
     except Exception as error:
         return [[],constants.INTERNAL_SERVER_ERROR]
 

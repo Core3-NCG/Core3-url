@@ -62,13 +62,13 @@ class testMyUrls(unittest.TestCase):
         assert b"user parameter required" in response.data
         print("Successfully Passed Test")
 
-    @mock.patch('service.getUrlList', return_value= [["ab","abcd"]])
+    @mock.patch('service.getUrlList', return_value= {"shortenedUrlKey": {"daysLeft": 3,"originalUrl": "longUrlValue"}})
     # check for retrieved list of Urls
     def test_myUrls2(self, mock_check_output):
         print("Started test test_myUrls3")
         tester = app.test_client(self)
         response = tester.get("/myUrls?user=absethi")
-        assert b'[["ab","abcd"]]' in response.data
+        assert b'{"shortenedUrlKey":{"daysLeft":3,"originalUrl":"longUrlValue"}}\n' in response.data
         print("Successfully Passed Test")
 
     @mock.patch('service.getUrlList', return_value= ("Something went wrong, try again later",500))

@@ -14,16 +14,16 @@ CORS(app)
 API format:
 http://127.0.0.1:5000/shortenUrl?user=<username>&url=<url_to_shorten>
 or
-http://127.0.0.1:5000/shortenUrl?user=<username>&url=<url_to_shorten>&time=<expiry_date>
+http://127.0.0.1:5000/shortenUrl?user=<username>&url=<url_to_shorten>&expiryDate=<expiry_date>
 """
 @app.route("/shortenUrl")
 def createShortenedUrl():
     user = request.args.get("user")
     longUrl = request.args.get("url")
-    time = request.args.get("time")
+    expiryDate = request.args.get("expiryDate")
     if user == None:
         return ("user parameter required",constants.BAD_REQUEST)
-    response = service.buildShortURL(longUrl,time,user)
+    response = service.buildShortURL(longUrl,expiryDate,user)
     return response
 
 
@@ -49,7 +49,7 @@ def getUrlList():
     if user == None:
         return ("user parameter required",constants.BAD_REQUEST)
     urlList = service.getUrlList(user)
-    if(isinstance(urlList,list)):
+    if(isinstance(urlList,dict)):
         return jsonify(urlList)
     return urlList
 
@@ -87,4 +87,4 @@ def loginUser():
 
 
 if __name__ == "__main__":
-    app.run(debug = True)
+    app.run(host="localhost",debug = True)
