@@ -18,6 +18,7 @@ import { AuthService } from '../auth.service';
 })
 export class RegistrationComponent implements OnInit {
   registerForm: FormGroup;
+  userExistsError: boolean = false;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -25,7 +26,7 @@ export class RegistrationComponent implements OnInit {
   ) {
     this.registerForm = this.fb.group(
       {
-        username: ['', [Validators.required, Validators.email]],
+        userName: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, this.passwordValidator()]],
         confirmpassword: ['', Validators.required],
       },
@@ -43,16 +44,17 @@ export class RegistrationComponent implements OnInit {
       userName: this.registerForm.get('userName')?.value,
       password: this.registerForm.get('password')?.value,
     });
-    if (result.includes('Registered User')) {
-      localStorage.setItem(
-        'username',
-        this.registerForm.get('userName')?.value
-      );
-      this.registerForm.setErrors({ incorrect: null });
+    if(result == 200)
+    {
+      localStorage.setItem("userName",this.registerForm.get("userName")?.value);
       this.router.navigate(['/home']);
-    } else {
-      this.registerForm.setErrors({ incorrect: true });
     }
+    else if (result == 409)
+    {
+      this.userExistsError = true;
+    }
+    else
+      this.registerForm.setErrors({"incorrect":true});
   }
 
   passwordValidator(): ValidatorFn {

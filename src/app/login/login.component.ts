@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { sleep } from '@cds/core/internal';
-import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -19,7 +17,7 @@ export class LoginComponent implements OnInit {
     private _authService: AuthService
   ) {
     this.loginForm = this._formBuilder.group({
-      username: ['', [Validators.required, Validators.email]],
+      userName: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
   }
@@ -32,9 +30,8 @@ export class LoginComponent implements OnInit {
      */
     this.isLoading = true;
     let result = await this._authService.login(this.loginForm.value);
-    result = 'Login Successful'
-    if (result == 'Login Successful') {
-      localStorage.setItem('username', this.loginForm.get('username')?.value);
+    if (result == 200) {
+      localStorage.setItem('userName', this.loginForm.get('userName')?.value);
       this._router.navigate(['/home']);
     } else {
       this.loginForm.setErrors({ incorrect: true });

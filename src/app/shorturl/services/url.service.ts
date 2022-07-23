@@ -13,15 +13,17 @@ export class UrlService {
 
   constructor(private _httpClient: HttpClient) {}
 
-  createShortUrl(longUrl: string): Observable<string> {
+  createShortUrl(longUrl: string,expirationDate: string): Observable<string> {
     const link =
       Constants.serverAddress +
       'shortenUrl?' +
       'user=' +
       localStorage.getItem('userName') +
       '&url=' +
-      longUrl;
-    return this._httpClient.get<string>(link).pipe(
+      longUrl +
+      '&expiryDate='+
+      expirationDate;
+    return this._httpClient.get(link,{responseType: 'text'}).pipe(
       retry(1),
       catchError((error) => {
         console.error(error);
@@ -30,5 +32,33 @@ export class UrlService {
     );
   }
 
-  getUrlsByUsername(username: string) {}
+  /**
+   * The return type is json. 
+   * Of the format:-
+   * {
+    "http://127.0.0.1:5000/ARDVKm": {
+        "daysLeft": 6,
+        "originalUrl": "https://stackoverflow.com/questions/56623458/could-not-find-the-implementation-for-builder-angular-devkit-build-angulardev"
+    },
+    "http://127.0.0.1:5000/IN3DKH": {
+        "daysLeft": 3,
+        "originalUrl": "https://www.geeksforgeeks.org/"
+    }
+   */
+  getUrlsByUsername(username: string) {
+    const link =
+    Constants.serverAddress +
+    'myUrls?' +
+    'user=' +
+    localStorage.getItem('userName');
+    return this._httpClient.get(link,{responseType: 'json'}).pipe(
+      retry(1),
+      catchError((error) => {
+        console.error(error);
+        return of('');
+      })
+    );
+  }
 }
+
+

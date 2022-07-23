@@ -48,6 +48,9 @@
           formControlName="confirmpassword"
         />
       </clr-password-container>
+      <div *ngIf="this.userExistsError" class="error active">
+        User already exists
+      </div>
       <div *ngIf="this.registerForm.invalid" class="error active">
         Do check confirrm password and password fields
       </div>

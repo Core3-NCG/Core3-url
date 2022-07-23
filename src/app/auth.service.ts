@@ -14,56 +14,50 @@ export class AuthService {
   constructor(private _httpClient: HttpClient,private _router:Router) {}
 
   isUserLoggedIn(): boolean {
-    return localStorage.getItem('username') !== null;
+    return localStorage.getItem('userName') !== null;
   }
 
-  async login(user: User): Promise<string> {
+  async login(user: User): Promise<number> {
     let state = await this.executeHttpRequest(user, 'login');
     return state;
   }
 
-  async register(user: User): Promise<string> {
+  async register(user: User): Promise<number> {
     let state = await this.executeHttpRequest(user, 'register');
     return state;
   }
 
   async executeHttpRequest(user: User, apiName: string) {
-    let promiseToExecuteRequest = new Promise((resolve, reject) => {
-      const res = this._httpClient
-        .post(Constants.serverAddress + apiName, user, {
-          headers: { 'Content-Type': 'application/json' },
-          responseType: 'text',
-        })
-        .subscribe((result) => {
-          /**
-           * getting the result
-           * from the subscription
-           * and resolving the same
-           */
-          resolve(result);
-        });
-      /**
-       * setting timeout to 1 second
-       * indicating failure of request execution
-       */
-      setTimeout(() => {
-        reject();
-      }, 1000);
+    let promiseToExecuteRequest = new Promise( (resolve, reject) => {
+
+      const res =this._httpClient.post(Constants.serverAddress+apiName
+        ,user
+        ,{headers: {'Content-Type': 'application/json'}
+        ,responseType: 'text',observe:'response'})
+        .subscribe( res=> {
+          resolve(res.status);
+        },
+        error => {
+          reject(error["status"]);
+        }
+        ); 
     });
 
-    let state: string = '';
+    let state:number=0;
 
-    await promiseToExecuteRequest
-      .then((result) => {
-        state = typeof result == 'string' ? result : 'Something went wrong';
-      })
-      .catch(() => {
-        state = 'Something went wrong';
-      });
+    await promiseToExecuteRequest.then((result) =>{
+      state = typeof result == 'number' ? result: 0 ;
+    }).catch((result) =>{
+      state =  result;
+    });
+
     return state;
+
+  
   }
   logout(){
     localStorage.removeItem('userName');
+    localStorage.clear();
     this._router.navigate(['/login']);
   }
 }

@@ -51,21 +51,29 @@ export class CreateShortUrlComponent implements OnInit {
   onSubmit() {
     this.isFormValid = true;
     this.isLoading = true;
-    if (localStorage.getItem(this.urlForm.get('originalUrl')?.value)) {
-      this.shortUrl = localStorage.getItem(
-        this.urlForm.get('originalUrl')?.value
-      )!;
+    let localStorageUrlKey = this.urlForm.get("originalUrl")?.value+this.urlForm.get("expirationDate")?.value ;
+    if (localStorage.getItem(localStorageUrlKey)) {
+      this.shortUrl = localStorage.getItem(localStorageUrlKey)!;
     } else {
       this._urlService
-        .createShortUrl(this.urlForm.get('originalUrl')?.value)
+        .createShortUrl(this.urlForm.get('originalUrl')?.value,this.urlForm.get('expirationDate')?.value)
         .subscribe((url) => {
           this.shortUrl = url;
-          this.shortUrl =
-            this.shortUrl == '' ? 'Something went wrong' : this.shortUrl;
-          localStorage.setItem(
-            this.urlForm.get('originalUrl')?.value,
-            this.shortUrl
-          );
+          this.shortUrl = this.shortUrl == '' ? 'Something went wrong' : this.shortUrl;
+          if(this.shortUrl != 'Something went wrong'){
+            localStorage.setItem(
+              localStorageUrlKey,
+              this.shortUrl
+            );
+          }
+        });
+
+        /**
+         * This gets all the urls of the user.
+         */
+        this._urlService
+        .getUrlsByUsername(localStorage.getItem("userName")!)
+        .subscribe((urls) => {
         });
     }
     this.isLoading = false;
