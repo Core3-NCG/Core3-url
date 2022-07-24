@@ -75,13 +75,6 @@ export class CreateShortUrlComponent implements OnInit {
           }
           this.isFormValid = true;
         });
-
-      /**
-       * This gets all the urls of the user.
-       */
-      this._urlService
-        .getUrlsByUsername(localStorage.getItem('userName')!)
-        .subscribe((urls) => {});
     }
     this.isLoading = false;
     //this.resetForm();
