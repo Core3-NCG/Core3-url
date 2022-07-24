@@ -1,3 +1,5 @@
+import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MyUrlsComponent } from './my-urls.component';
@@ -8,7 +10,8 @@ describe('MyUrlsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MyUrlsComponent ]
+      declarations: [ MyUrlsComponent ],
+      imports:[HttpClientTestingModule]
     })
     .compileComponents();
   });

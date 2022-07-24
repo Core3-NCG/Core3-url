@@ -27,8 +27,7 @@
       </clr-password-container>
       <div
         *ngIf="
-          this.loginForm.invalid &&
-          this.loginForm.dirty && this.loginForm.touched
+          this.loginForm.errors
         "
         class="error active"
       >

@@ -13,7 +13,7 @@ export class UrlService {
 
   constructor(private _httpClient: HttpClient) {}
 
-  createShortUrl(longUrl: string,expirationDate: string): Observable<string> {
+  createShortUrl(longUrl: string, expirationDate: string): Observable<string> {
     const link =
       Constants.serverAddress +
       'shortenUrl?' +
@@ -21,9 +21,9 @@ export class UrlService {
       localStorage.getItem('userName') +
       '&url=' +
       longUrl +
-      '&expiryDate='+
+      '&expiryDate=' +
       expirationDate;
-    return this._httpClient.get(link,{responseType: 'text'}).pipe(
+    return this._httpClient.get(link, { responseType: 'text' }).pipe(
       retry(1),
       catchError((error) => {
         console.error(error);
@@ -45,20 +45,18 @@ export class UrlService {
         "originalUrl": "https://www.geeksforgeeks.org/"
     }
    */
-  getUrlsByUsername(username: string) {
+  getUrlsByUsername(username: string): Observable<object> {
     const link =
-    Constants.serverAddress +
-    'myUrls?' +
-    'user=' +
-    localStorage.getItem('userName');
-    return this._httpClient.get(link,{responseType: 'json'}).pipe(
+      Constants.serverAddress +
+      'myUrls?' +
+      'user=' +
+      localStorage.getItem('userName');
+    return this._httpClient.get(link, { responseType: 'json' }).pipe(
       retry(1),
       catchError((error) => {
         console.error(error);
-        return of('');
+        return of({});
       })
     );
   }
 }
-
-

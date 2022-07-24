@@ -1,1 +1,7 @@
-<app-urldetails></app-urldetails>
+<div *ngIf="urlDetailsList.length === 0">
+<h3>No URLs found</h3>
+</div>
+
+<div *ngFor="let urlDetails of urlDetailsList">
+<app-urldetails [urlDetails]='urlDetails'></app-urldetails>
+</div>

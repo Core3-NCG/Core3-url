@@ -15,6 +15,8 @@ import { AuthGuard } from './auth.guard';
 import { CreateShortUrlComponent } from './shorturl/create-short-url/create-short-url.component';
 import { MyUrlsComponent } from './shorturl/my-urls/my-urls.component';
 import { UrldetailsComponent } from './shorturl/urldetails/urldetails.component';
+import { UrlService } from './shorturl/services/url.service';
+import { AuthService } from './auth.service';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,7 @@ import { UrldetailsComponent } from './shorturl/urldetails/urldetails.component'
     ClipboardModule,
     HttpClientModule,
   ],
-  providers: [AuthGuard],
+  providers: [AuthService,AuthGuard,UrlService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

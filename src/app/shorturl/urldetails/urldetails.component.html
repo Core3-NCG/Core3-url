@@ -4,36 +4,36 @@
       <div class="card-block">
         <div class="card-text" clrForm>
           <clr-input-container>
-            <label>Shortened URL </label>
-            <input
-              clrInput
-              type="text"
-              name="shortlUrl"
-              class="readonlyInput"
-              #inputTarget
-              value="https://clarity.design/documentation/spinners"
-              readonly
-            />
-          </clr-input-container>
-          <clr-input-container>
             <label>Long URL </label>
             <input
               clrInput
               type="text"
-              name="shortlUrl"
+              name="longUrl"
               class="readonlyInput"
-              #inputTarget
-              value="https://clarity.design/documentation/spinners"
+              [value]="urlDetails.longUrl"
               readonly
             />
           </clr-input-container>
+          <clr-input-container>
+            <label>Shortened URL </label>
+            <input
+              clrInput
+              type="text"
+              name="shortUrl"
+              class="readonlyInput"
+              #inputTarget
+              [value]="urlDetails.shortUrl"
+              readonly
+            />
+          </clr-input-container>
+          <p><code class="clr-code">expires in {{urlDetails.expirationTime}} days</code></p>
         </div>
       </div>
       <div class="card-footer">
-        <button class="btn btn btn-primary">
+        <button class="btn btn btn-primary" [ngxClipboard]="inputTarget">
           <clr-icon shape="copy-to-clipboard"></clr-icon> Copy
         </button>
-        <button class="btn btn btn-primary">
+        <button class="btn btn btn-primary" (click)="redirect()">
           <clr-icon shape="redo"></clr-icon> Redirect
         </button>
       </div>

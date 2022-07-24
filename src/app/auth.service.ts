@@ -40,7 +40,7 @@ export class AuthService {
         error => {
           reject(error["status"]);
         }
-        ); 
+        );
     });
 
     let state:number=0;
@@ -52,9 +52,8 @@ export class AuthService {
     });
 
     return state;
-
-  
   }
+
   logout(){
     localStorage.removeItem('userName');
     localStorage.clear();

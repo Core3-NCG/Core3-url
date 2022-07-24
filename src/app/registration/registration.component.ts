@@ -93,8 +93,13 @@ export class RegistrationComponent implements OnInit {
       const form = group as FormGroup;
       const password = form.get('password')?.value;
       const confirmpassword = form.get('confirmpassword')?.value;
-      if (password === confirmpassword) return null;
-      else return { validation: 'Invalid passwords' };
+      if (password === confirmpassword)
+      form.get('confirmpassword')?.setErrors(null);
+      else
+      form.get('confirmpassword')?.setErrors(
+        {validation: 'Invalid passwords'}
+      );
+      return {};
     };
   }
 }

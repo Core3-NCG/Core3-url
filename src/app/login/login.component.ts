@@ -33,6 +33,7 @@ export class LoginComponent implements OnInit {
     if (result == 200) {
       localStorage.setItem('userName', this.loginForm.get('userName')?.value);
       this._router.navigate(['/home']);
+      this.loginForm.setErrors(null);
     } else {
       this.loginForm.setErrors({ incorrect: true });
     }

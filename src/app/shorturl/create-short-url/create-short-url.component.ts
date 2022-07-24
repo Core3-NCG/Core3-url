@@ -22,7 +22,7 @@ export class CreateShortUrlComponent implements OnInit {
   isFormValid: boolean = false;
   isLoading: boolean = false;
   shortUrl: string = '';
-
+  previous = {};
   constructor(
     private _formBuilder: FormBuilder,
     private _clipboardService: ClipboardService,
@@ -44,46 +44,53 @@ export class CreateShortUrlComponent implements OnInit {
       this.onexpirationTimeTypeChanges();
     });
     this.urlForm.valueChanges.subscribe(() => {
-      this.isFormValid = false;
+      if (this.previous && this.previous !== this.urlForm.value) {
+        this.isFormValid = false;
+      }
     });
   }
 
   onSubmit() {
-    this.isFormValid = true;
+    this.previous = this.urlForm.value;
+    this.isFormValid = false;
     this.isLoading = true;
-    let localStorageUrlKey = this.urlForm.get("originalUrl")?.value+this.urlForm.get("expirationDate")?.value ;
+    let localStorageUrlKey =
+      this.urlForm.get('originalUrl')?.value +
+      this.urlForm.get('expirationDate')?.value;
     if (localStorage.getItem(localStorageUrlKey)) {
       this.shortUrl = localStorage.getItem(localStorageUrlKey)!;
+      this.isFormValid = true;
     } else {
       this._urlService
-        .createShortUrl(this.urlForm.get('originalUrl')?.value,this.urlForm.get('expirationDate')?.value)
+        .createShortUrl(
+          this.urlForm.get('originalUrl')?.value,
+          this.urlForm.get('expirationDate')?.value
+        )
         .subscribe((url) => {
           this.shortUrl = url;
-          this.shortUrl = this.shortUrl == '' ? 'Something went wrong' : this.shortUrl;
-          if(this.shortUrl != 'Something went wrong'){
-            localStorage.setItem(
-              localStorageUrlKey,
-              this.shortUrl
-            );
+          this.shortUrl =
+            this.shortUrl == '' ? 'Something went wrong' : this.shortUrl;
+          if (this.shortUrl != 'Something went wrong') {
+            localStorage.setItem(localStorageUrlKey, this.shortUrl);
           }
+          this.isFormValid = true;
         });
 
-        /**
-         * This gets all the urls of the user.
-         */
-        this._urlService
-        .getUrlsByUsername(localStorage.getItem("userName")!)
-        .subscribe((urls) => {
-        });
+      /**
+       * This gets all the urls of the user.
+       */
+      this._urlService
+        .getUrlsByUsername(localStorage.getItem('userName')!)
+        .subscribe((urls) => {});
     }
     this.isLoading = false;
-    this.resetForm();
+    //this.resetForm();
   }
 
   resetForm() {
     this.urlForm.reset({
       originalUrl: '',
-      expirationTimeType: '',
+      expirationTimeType: 'Default',
       expirationDate: '',
     });
   }
