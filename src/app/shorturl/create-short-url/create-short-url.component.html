@@ -5,7 +5,7 @@
       <label
         >Original URL<clr-signpost>
           <clr-signpost-content *clrIfOpen>
-            <p class="signpost-content"><code>provide valid website links</code></p>
+            <p class="signpost-content"><code>Provide a valid URL (Beginning with https:// or http://)</code></p>
           </clr-signpost-content>
         </clr-signpost></label
       >
@@ -14,7 +14,7 @@
         name="originalUrl"
         formControlName="originalUrl"
         clrInput
-        placeholder="Enter long URL to create short URL"
+        placeholder="Enter long URL"
       />
       <clr-control-error
         *ngIf="
@@ -30,8 +30,8 @@
           <clr-signpost-content *clrIfOpen>
             <p class="signpost-content">
               <code
-                >if it is default short url will expire in 3 days,else expires
-                on customisation</code
+                >By default, a shortened URL will expire in 3 days, else choose
+                a custom expiration date</code
               >
             </p>
           </clr-signpost-content>

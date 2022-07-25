@@ -35,7 +35,7 @@
             this.registerForm.get('password')?.invalid &&
             this.registerForm.get('password')?.touched
           "
-          >Please provide strong password</clr-control-error
+          >Please provide a stronger password containing uppercase, lowercase, special and numeric characters</clr-control-error
         >
       </clr-password-container>
       <clr-password-container>
@@ -52,7 +52,7 @@
         User already exists
       </div>
       <div *ngIf="this.registerForm.get('confirmpassword')?.errors && this.registerForm.get('confirmpassword')?.touched " class="error active">
-        Do check confirrm password and password fields
+        Password and Confirm Password must match
       </div>
       <button
         type="submit"
