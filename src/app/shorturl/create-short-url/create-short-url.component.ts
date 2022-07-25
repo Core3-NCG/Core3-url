@@ -43,17 +43,16 @@ export class CreateShortUrlComponent implements OnInit {
     this.urlForm.get('expirationTimeType')?.valueChanges.subscribe(() => {
       this.onexpirationTimeTypeChanges();
     });
-    this.urlForm.valueChanges.subscribe(() => {
-      if (this.previous && this.previous !== this.urlForm.value) {
-        this.isFormValid = false;
-      }
-    });
+    // this.urlForm.valueChanges.subscribe(() => {
+    //   // if (this.previous && this.previous !== this.urlForm.value) {
+    //   //   this.isFormValid = false;
+    //   // }
+    // });
   }
 
   onSubmit() {
     this.previous = this.urlForm.value;
     this.isFormValid = false;
-    this.isLoading = true;
     let localStorageUrlKey =
       this.urlForm.get('originalUrl')?.value +
       this.urlForm.get('expirationDate')?.value;
@@ -75,9 +74,10 @@ export class CreateShortUrlComponent implements OnInit {
           }
           this.isFormValid = true;
         });
+      this.isLoading = true;
     }
     this.isLoading = false;
-    //this.resetForm();
+    this.resetForm();
   }
 
   resetForm() {
