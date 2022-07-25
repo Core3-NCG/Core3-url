@@ -34,6 +34,18 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
+
+  it('should check form is invalid when empty', () => {
+    expect(component.loginForm.valid).toBeFalsy();
+  });
+
+  it('should check for valid email', () => {
+    component.loginForm.controls['userName'].setValue("name1gmail.com");
+    expect(component.loginForm.get('userName')?.invalid).toBeTrue();
+    component.loginForm.controls['userName'].setValue("name1@gmail.com");
+    expect(component.loginForm.get('userName')?.invalid).toBeFalse();
+  });
+
   it('should check if login succesfull routes to home page', async () => {
     let ans:any = 200;
     let navResult:any = true;
