@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ClipboardModule } from 'ngx-clipboard';
 
 import { UrldetailsComponent } from './urldetails.component';
 
@@ -8,9 +9,9 @@ describe('UrldetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ UrldetailsComponent ]
-    })
-    .compileComponents();
+      imports:[ClipboardModule],
+      declarations: [UrldetailsComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -21,5 +22,11 @@ describe('UrldetailsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('on redirect,short url should be opened in new page', () => {
+    spyOn(window, 'open');
+    component.redirect();
+    expect(window.open).toHaveBeenCalled();
   });
 });

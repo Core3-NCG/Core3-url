@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ClipboardService } from 'ngx-clipboard';
 
 interface UrlDetails{
   shortUrl:string;
@@ -18,7 +19,7 @@ export class UrldetailsComponent implements OnInit {
     expirationTime: 0
   }
 
-  constructor() { }
+  constructor(private _clipboardService:ClipboardService) { }
   ngOnInit(): void {  }
 
   redirect() {
