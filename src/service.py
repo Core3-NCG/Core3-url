@@ -46,7 +46,6 @@ original url to redirect to
 """
 def getLongUrl(key):
     longUrl,status = db.get_longurl(key)
-    print(longUrl)
     if(longUrl):
         return longUrl
     if(status == constants.INTERNAL_SERVER_ERROR):

@@ -3,6 +3,7 @@ from flask import Flask , redirect, request, jsonify
 import service as service
 import constants
 import logging
+from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS
 
 #logging.basicConfig(filename='record.log', level=logging.DEBUG,format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
@@ -10,12 +11,27 @@ app = Flask(__name__)
 app.secret_key = "core3"
 CORS(app)
 
+SWAGGER_URL = '/swagger'
+API_URL = '/static/swagger.json'
+SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "ShortURL App"
+    }
+)
+
+app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
+
 """
-API format:
-http://127.0.0.1:5000/shortenUrl?user=<username>&url=<url_to_shorten>
-or
-http://127.0.0.1:5000/shortenUrl?user=<username>&url=<url_to_shorten>&expiryDate=<expiry_date>
-"""
+Create a short URL given a long URL
+@param user: get : the requesters userName
+@param url: get : the long url to be shortened
+@param expiryDate: get : the date at which the url expires
+@return: 200: a shortened URL as a flask/response object
+@raise 400: Bad request
+@raise 500: Internal Server Error
+ """
 @app.route("/shortenUrl")
 def createShortenedUrl():
     user = request.args.get("user")
@@ -28,9 +44,12 @@ def createShortenedUrl():
 
 
 """
-API format:
-http://127.0.0.1:5000/<encoded_value>
-"""
+Redirect to original URL
+@param shortUrl: get : the unique encoding for the original URL
+@return: 302: redirection to the original URL
+@raise 404: Page Not Found Error
+@raise 500: Internal Server Error
+ """
 @app.route("/<shortUrl>")
 def redirectToLongUrl(shortUrl):
     long_url = service.getLongUrl(shortUrl)
@@ -40,9 +59,12 @@ def redirectToLongUrl(shortUrl):
 
 
 """
-API format:
-http://127.0.0.1:5000/myUrls?user=<username>
-"""
+Get a dictionary of all the URLs of the user
+@param user: get : the requesters userName
+@return: 200: a dictionary of URLs as a flask/response object
+@raise 400: Bad request
+@raise 500: Internal Server Error
+ """
 @app.route("/myUrls")
 def getUrlList():
     user = request.args.get("user")
@@ -55,33 +77,35 @@ def getUrlList():
 
 
 """
-API format:
-http://127.0.0.1:5000/register
-arguments : userName,password
-accepts : application/json
-returns : text
-"""
+Register the user
+@param userName: post : the requesters userName
+@param password: post : the password enterd
+@return: 200: a 'Registered User <userName>' string message as a flask/response object
+@raise 409: Conflict Error
+@raise 500: Internal Server Error
+ """
 @app.route("/register",methods = ['POST'])
 def registerUser():
     data = request.get_json()
-    username = data["userName"]
+    userName = data["userName"]
     password = data["password"]
-    response = service.registerUser(username,password)
+    response = service.registerUser(userName,password)
     return response
 
 """
-API format:
-http://127.0.0.1:5000/login
-arguments : userName,password
-accepts : application/json
-returns : text
-"""
+Log the user in
+@param userName: post : the requesters userName
+@param password: post : the password enterd
+@return: 200: a 'Login Successful' string message as a flask/response object
+@raise 401: Authetication Error
+@raise 500: Internal Server Error
+ """
 @app.route("/login",methods=['POST'])
 def loginUser():
     data = request.get_json()
-    username = data["userName"]
+    userName = data["userName"]
     password = data["password"]
-    response = service.loginUser(username,password)
+    response = service.loginUser(userName,password)
     return response
 
 
