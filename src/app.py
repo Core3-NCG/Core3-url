@@ -3,6 +3,7 @@ from flask import Flask , redirect, request, jsonify
 import service as service
 import constants
 import logging
+import db_url as db
 from flask_cors import CORS
 
 #logging.basicConfig(filename='record.log', level=logging.DEBUG,format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')

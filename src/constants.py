@@ -22,6 +22,6 @@ BAD_REQUEST = 400
 # DATABASE CONFIG
 HOST="localhost"
 USER="root"
-PASSWORD="password"
+PASSWORD="MyNewPass"
 AUTH_PLUGIN='mysql_native_password'
 DB_NAME='Tiny_URL'

@@ -3,7 +3,10 @@ from unittest import mock
 import sys
 sys.path.insert(1,'../src')
 from app import app
+import service
 import json
+import constants
+import db_url as db
 
 class testShortenUrl(unittest.TestCase):
 
@@ -17,6 +20,7 @@ class testShortenUrl(unittest.TestCase):
         self.assertEqual(statuscode, 200)
         assert b"http://127.0.0.1:5000/AsvVCh" in response.data
         print("Successfully Passed Test")
+
         
     @mock.patch('service.buildShortURL', return_value= ('',400))
     # check for response code 400 when no user
@@ -111,6 +115,16 @@ class testRegister(unittest.TestCase):
         self.assertEqual(response.status_code,500)
         assert b'Something went wrong, try again later' in response.data
         print("Successfully Passed Test")
+
+    @mock.patch('db_url.register_user', return_value= (constants.OK))
+    def test_register(self, mock_check_output):
+        print("Started test test_registerUser6")
+        self.assertEqual((service.registerUser("aditi","dora")),("Registered User "+"aditi",constants.OK))
+
+    @mock.patch('db_url.register_user', return_value= (constants.DUPLICATE_ERROR))    
+    def test_register1(self, mock_check_output):
+        print("Started test test_registerUser7")
+        self.assertEqual((service.registerUser("aditi","dora")),("User already exists",constants.DUPLICATE_ERROR))
 
 class testLogin(unittest.TestCase):
 
