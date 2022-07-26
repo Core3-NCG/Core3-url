@@ -12,3 +12,7 @@ zipp==3.8.1
 Flask-Cors==3.0.10
 redis==4.3.4
 bcrypt==3.2.2
+flask-swagger-ui==4.11.1
+pytest==7.1.2
+pytest-cov==3.0.0
+coverage==6.4.2

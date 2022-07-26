@@ -1,0 +1,263 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "description": "API documentation for ShortURL application built by Core3",
+      "version": "1.0.0",
+      "title": "ShortUrl APP API documentation",
+      "license": {
+        "name": "MIT",
+        "url": "https://opensource.org/licenses/MIT"
+      }
+    },
+    "servers": [
+      {
+        "url": "http://127.0.0.1:5000/"
+      }
+    ],
+    "tags": [
+      {
+        "name": "Get Requests",
+        "description": "All the get requests in the Application"
+      },
+      {
+        "name": "Post Requests",
+        "description": "All the post requests in the Application"
+      }
+    ],
+    "paths": {
+      "/shortenUrl": {
+        "get": {
+          "tags": [
+            "Get Requests"
+          ],
+          "parameters": [
+          {
+            "name": "user",
+            "in": "query",
+            "required": true,
+            "description": "Username to identify the User",
+            "type": "string"
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "description": "URL to be shortened",
+            "type": "string"
+          },
+          {
+            "name": "expiryDate",
+            "in": "query",
+            "required": false,
+            "description": "Custom expiry date for the shortened URL, format - MM/DD/YY",
+            "type": "string"
+          }
+        ],
+          "summary": "Returns generated short URL",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "type": "string"
+              }
+            },
+            "400": {
+                "description": "BAD REQUEST",
+                "schema": {
+                  "type": "string"
+                }
+            },
+            "500": {
+                "description": "INTERNAL SERVER ERROR",
+                "schema": {
+                  "type": "string"
+                }
+            }
+          }
+        }
+      },
+      "/{shortUrl}": {
+        "parameters": [
+          {
+            "name": "shortUrl",
+            "in": "path",
+            "required": true,
+            "description": "The Unique encoding of the Orignal URL",
+            "type": "string"
+          }
+        ],
+        "get": {
+          "tags": [
+            "Get Requests"
+          ],
+          "summary": "Redirect to the original URL, given the shortened URL",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "shortUrl",
+              "required": true,
+              "description": "Unique encoding of the Orignal URL",
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "type": "html"
+            },
+            "404": {
+              "description": "NOT FOUND",
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "/myUrls": {
+        "get": {
+          "tags": [
+            "Get Requests"
+          ],
+          "parameters": [
+          {
+            "name": "user",
+            "in": "query",
+            "required": true,
+            "description": "Username to identify the User",
+            "type": "string"
+          }
+        ],
+          "summary": "Returns All the URLs of the user",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "type": "application/json"
+              }
+            },
+            "400": {
+                "description": "BAD REQUEST",
+                "schema": {
+                  "type": "string"
+                }
+            },
+            "500": {
+                "description": "INTERNAL SERVER ERROR",
+                "schema": {
+                  "type": "string"
+                }
+            }
+          }
+        }
+      },
+      "/register": {
+        "post": {
+            "tags": [
+              "Post Requests"
+            ],
+            "summary": "Add a new user to the Database",
+            "requestBody": {
+              "description": "Add a new user to the Database",
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/postBody"
+                  }
+                }
+              }
+            },
+            "produces": [
+              "string"
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "schema": {
+                    "type": "string"
+                }
+              },
+              "409": {
+                "description": "AUTHENTICATION ERROR",
+                "schema": {
+                    "type": "string"
+                }
+              },
+              "500": {
+                "description": "INTERNAL SERVER ERROR",
+                "schema": {
+                    "type": "string"
+                }
+              }
+            }
+          }
+      },
+      "/login": {
+        "post": {
+            "tags": [
+              "Post Requests"
+            ],
+            "summary": "Verify and log a user into the system",
+            "requestBody": {
+              "description": "Verify and log a user into the system",
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/postBody"
+                  }
+                }
+              }
+            },
+            "produces": [
+              "string"
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "schema": {
+                    "type": "string"
+                }
+              },
+              "401": {
+                "description": "AUTHENTICATION ERROR",
+                "schema": {
+                    "type": "string"
+                }
+              },
+              "500": {
+                "description": "INTERNAL SERVER ERROR",
+                "schema": {
+                    "type": "string"
+                }
+              }
+            }
+          }
+      }
+    },
+    "components": {
+      "schemas": {
+        "shortUrl": {
+          "properties": {
+            "uuid": {
+              "type": "string"
+            }
+          }
+        },
+        "postBody": {
+          "type": "object",
+          "properties": {
+            "userName": {
+              "type": "string",
+              "format": "string"
+            },
+            "password": {
+              "type": "string",
+              "format": "string"
+            }
+          }
+        }
+      }
+    }
+  }
