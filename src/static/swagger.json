@@ -101,14 +101,13 @@
             }
           ],
           "responses": {
-            "200": {
-              "description": "OK",
-              "type": "html"
+            "302": {
+              "description": "OK"
             },
             "404": {
               "description": "NOT FOUND",
               "schema": {
-                "type": "string"
+                "type": "text/html"
               }
             }
           }

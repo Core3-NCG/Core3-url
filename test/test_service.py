@@ -1,3 +1,4 @@
+from re import S
 import unittest
 from unittest import mock
 import sys
@@ -9,12 +10,34 @@ import json
 
 
 class testBuildShortUrl(unittest.TestCase):
+
+    @mock.patch('db_url.add_url', return_value= (constants.OK))
+    @mock.patch('db_url.check_if_user_exists', return_value=(constants.OK))
+    def test_BuildShortUrl2(self, mock_test_output1, mocktest_output2):
+        print("Started test test_BuildShortUrl add_url")
+        shortUrlStatus = service.buildShortURL("https://vmware.zoom.us/j/98419544431?pwd=WXdTNkdLZDNXZ0IrUjZNNDNVRTFxdz09#succes","02/13/2004","aditi")[1]
+        self.assertEqual(shortUrlStatus, 200)
+
+    @mock.patch('db_url.check_if_user_exists', return_value=(constants.OK))
+    @mock.patch('db_url.add_url', return_value= (constants.INTERNAL_SERVER_ERROR))
+    def test_BuildShortUrl4(self, mock_test_output, mocktest_output2):
+        print("Started test test_BuildShortUrl add_url2")
+        shortUrlStatus = service.buildShortURL("https://vmware.zoom.us/j/98419544431?pwd=WXdTNkdLZDNXZ0IrUjZNNDNVRTFxdz09#succes","","aditi")
+        self.assertEqual(shortUrlStatus, ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR))
+
+
     @mock.patch('db_url.check_if_user_exists', return_value= (constants.BAD_REQUEST))
     def test_BuildShortUrl(self, mock_test_output):
-        print("Started test test_BuildShortUrl check_user_exists1")
-        self.assertEqual(service.buildShortURL("https://vmware.zoom.us/j/98419544431?pwd=WXdTNkdLZDNXZ0IrUjZNNDNVRTFxdz09#success","02132004","user1"),
-        ("User does not exist",constants.BAD_REQUEST));
+        print("Started test test_BuildShortUrl check_user_exists")
+        self.assertEqual(service.buildShortURL("https://vmware.zoom.us/j/98419544431?pwd=WXdTNkdLZDNXZ0IrUjZNNDNVRTFxdz09#success","02/13/2004","user1"),
+        ("User does not exist",constants.BAD_REQUEST))
 
+
+    @mock.patch('db_url.check_if_user_exists', return_value= (constants.INTERNAL_SERVER_ERROR))
+    def test_BuildShortUrl1(self, mock_test_output):
+        print("Started test test_BuildShortUrl check_user_exists1")
+        self.assertEqual(service.buildShortURL("https://vmware.zoom.us/j/98419544431?pwd=WXdTNkdLZDNXZ0IrUjZNNDNVRTFxdz09#success","02132004","user2"),
+       ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR));
 
 class testGetLongUrl(unittest.TestCase):  
     @mock.patch('db_url.get_longurl', return_value= ("/shortenUrl?user=Om&url=https://vmware.zoom.us/j/98419544431?pwd=WXdTNkdLZDNXZ0IrUjZNNDNVRTFxdz09#success", constants.OK))
@@ -26,6 +49,7 @@ class testGetLongUrl(unittest.TestCase):
     def test_getLongUrl1(self, mock_test_output):
             print("Started test test_getLongUrl1")
             self.assertEqual(service.getLongUrl('http://127.0.0.1:5000/AsvVCZ'), ("Something went wrong, try again later ",constants.INTERNAL_SERVER_ERROR))
+        
 
 class testGetUrl(unittest.TestCase):
 
@@ -39,19 +63,19 @@ class testGetUrl(unittest.TestCase):
         print("Started test test_getUrlList check_user_exists2")
         self.assertEqual(service.getUrlList("user2"),("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR)) 
 
+    @mock.patch('db_url.check_if_user_exists', return_value=(constants.OK))
+    @mock.patch('db_url.urls_for_user', return_value= ([[],constants.INTERNAL_SERVER_ERROR]))  
+    def test_getUrlList2(self, mock_test_output, mock_test_output2):
+        print("Started test test_getUrlList")
+        self.assertEqual(service.getUrlList("aditi"), ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR))
+
+    # @mock.patch('db_url.urls_for_user', return_value=(['http://127.0.0.1:5000/AsvVCZ'],constants.OK))
+    # def test_getUrlList3(self, mock_test_output):
+    #     print("Started test test_getUrlList1")
+    #     self.assertEqual(service.getUrlList("aditi")['originalUrl'], 'https://vmware.zoom.us/j/98419544431?pwd=WXdTNkdLZDNXZ0IrUjZNNDNVRTFxdz09#success')
+
 
 class testRegister(unittest.TestCase):
-
-
-    # @mock.patch('db.check_if_user_exists', return_value= (constants.OK)
-    # def test_shortenUrlService1(self):
-    #     print("Started test test_shortenUrl4")
-    #     tester = app.test_client(self)
-    #     response = tester.get("/shortenUrl?user=nouser&url=https://vmware.zoom.us/j/98419544431?pwd=WXdTNkdLZDNXZ0IrUjZNNDNVRTFxdz09#success")
-    #     statuscode = response.status_code
-    #     self.assertEqual(statuscode, 400)
-    #     #assert b"http://127.0.0.1:5000/AsvVCh" in response.data
-    #     print("Successfully Passed Test")
 
 
     @mock.patch('db_url.register_user', return_value= (constants.OK))

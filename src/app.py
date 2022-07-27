@@ -54,7 +54,10 @@ Redirect to original URL
 def redirectToLongUrl(shortUrl):
     long_url = service.getLongUrl(shortUrl)
     if (isinstance(long_url,str)):
-        return redirect(long_url)
+        print(long_url)
+        return redirect(long_url,code=302)
+    elif( constants.NOT_FOUND in long_url):
+        return redirect(constants.PAGE_NOT_FOUND,code=302)
     return long_url
 
 
