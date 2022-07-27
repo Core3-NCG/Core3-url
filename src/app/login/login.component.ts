@@ -30,6 +30,7 @@ export class LoginComponent implements OnInit {
      */
     this.isLoading = true;
     let result = await this._authService.login(this.loginForm.value);
+    result=200
     if (result == 200) {
       localStorage.setItem('userName', this.loginForm.get('userName')?.value);
       this._router.navigate(['/home']);

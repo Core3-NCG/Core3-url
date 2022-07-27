@@ -1,0 +1,14 @@
+.full-height {
+    background-image: url('src/assets/Login-BG-dark-theme.png');
+    height: 100vh;
+  }
+  h1{
+    color: white;
+  }
+  .context{
+    text-align: center;
+    padding-top: 2%;
+  }
+  .main-text{
+    padding-top: 18%;
+  }

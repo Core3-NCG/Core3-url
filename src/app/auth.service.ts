@@ -59,4 +59,6 @@ export class AuthService {
     localStorage.clear();
     this._router.navigate(['/login']);
   }
+
+  
 }
