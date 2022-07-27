@@ -17,6 +17,7 @@ import { MyUrlsComponent } from './shorturl/my-urls/my-urls.component';
 import { UrldetailsComponent } from './shorturl/urldetails/urldetails.component';
 import { UrlService } from './shorturl/services/url.service';
 import { AuthService } from './auth.service';
+import { ErrorPageComponent } from './error-page/error-page.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { AuthService } from './auth.service';
     MyUrlsComponent,
     UrldetailsComponent,
     RegistrationComponent,
+    ErrorPageComponent,
   ],
   imports: [
     BrowserModule,

@@ -6,6 +6,7 @@ import { LoginComponent } from './login/login.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { CreateShortUrlComponent } from './shorturl/create-short-url/create-short-url.component';
 import { MyUrlsComponent } from './shorturl/my-urls/my-urls.component';
+import { ErrorPageComponent } from './error-page/error-page.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -21,6 +22,9 @@ const routes: Routes = [
       { path: 'myurls', component: MyUrlsComponent },
     ],
   },
+  {
+    path:'**',pathMatch: 'full',component: ErrorPageComponent
+  }
 ];
 
 @NgModule({
