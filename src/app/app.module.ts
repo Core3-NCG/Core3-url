@@ -18,6 +18,7 @@ import { UrldetailsComponent } from './shorturl/urldetails/urldetails.component'
 import { UrlService } from './shorturl/services/url.service';
 import { AuthService } from './auth.service';
 import { ErrorPageComponent } from './error-page/error-page.component';
+import { MyurlPerPageService } from './shorturl/my-urls/myurl-per-page.service';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,7 @@ import { ErrorPageComponent } from './error-page/error-page.component';
     ClipboardModule,
     HttpClientModule,
   ],
-  providers: [AuthService,AuthGuard,UrlService],
+  providers: [AuthService,AuthGuard,UrlService,MyurlPerPageService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

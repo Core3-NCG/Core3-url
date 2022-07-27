@@ -20,7 +20,9 @@ export class UrldetailsComponent implements OnInit {
   }
 
   constructor(private _clipboardService:ClipboardService) { }
-  ngOnInit(): void {  }
+  ngOnInit(): void { 
+      console.log("urlDetails",this.urlDetails);
+   }
 
   redirect() {
     const url = this.urlDetails.shortUrl;
