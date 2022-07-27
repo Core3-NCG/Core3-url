@@ -61,7 +61,7 @@ def createTable():
     TABLES['URLS']=("create table `URLS` ( `shortened_url` varchar(255) NOT NULL,"
         "`actual_url` varchar(255) NOT NULL,"
         "`user_name` varchar(255),"
-        "`expiration_time` Date NOT NULL,"
+        "`expiration_time` Date,"
         "PRIMARY KEY (`shortened_url`),"
         "FOREIGN KEY (`user_name`) REFERENCES Users(`user_name`) ON UPDATE CASCADE ON DELETE CASCADE)ENGINE=INNODB")
 
@@ -154,9 +154,10 @@ def get_longurl(short_url):
         long_url=""
         current_date=datetime.date.today()
         for a in my_cursor:
-            if a[3]<current_date:
-                my_cursor.execute("delete from URLS where shortened_url like %s",[a[0]])
-                continue
+            if a[3]!=None:
+                if a[3]<current_date:
+                    my_cursor.execute("delete from URLS where shortened_url like %s",[a[0]])
+                    continue
             long_url=a[1]
         close_mysql_connection(my_cursor,mydb)
         redisDB.set(name=short_url,value=long_url,ex = constants.CACHE_EXPIRY)
@@ -173,13 +174,18 @@ def urls_for_user(user_name):
         current_date=datetime.date.today()
         for a in my_cursor:
             current_url_list=[]
-            if a[3]<current_date:
-                my_cursor.execute("delete from URLS where shortened_url like %s",[a[0]])
-                print("expired date deleted")
-                continue
-            current_url_list.append(a[0])
-            current_url_list.append(a[1])
-            current_url_list.append((a[3]-current_date).days)
+            if a[3] != None:
+                if a[3]<current_date:
+                    my_cursor.execute("delete from URLS where shortened_url like %s",[a[0]])
+                    print("expired date deleted")
+                    continue
+                current_url_list.append(a[0])
+                current_url_list.append(a[1])
+                current_url_list.append((a[3]-current_date).days)
+            else:
+                current_url_list.append(a[0])
+                current_url_list.append(a[1])
+                current_url_list.append(None)
             all_url_list.append(current_url_list)
         close_mysql_connection(my_cursor,mydb)
         return [all_url_list,constants.OK]

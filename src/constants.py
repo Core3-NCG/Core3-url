@@ -25,4 +25,4 @@ HOST="localhost"
 USER="root"
 PASSWORD="password"
 AUTH_PLUGIN='mysql_native_password'
-DB_NAME='Tiny_URL'
+DB_NAME='Tiny_URL_DB'

@@ -26,7 +26,7 @@ def buildShortURL(longUrl,expiryDate,user):
             return ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR)
 
         if expiryDate == None or expiryDate == "":
-            expiryDate = datetime.date.today()+datetime.timedelta(days=3)
+            expiryDate = None
         else:
             expiryDate = datetime.datetime.strptime(expiryDate, '%m/%d/%Y')
             expiryDate = expiryDate.date()
