@@ -8,6 +8,7 @@ from http.client import INTERNAL_SERVER_ERROR, NOT_FOUND
 
 
 SERVER_URL = "127.0.0.1:5000"
+PAGE_NOT_FOUND = "http://localhost:4200/NOT_FOUND"
 
 CACHE_EXPIRY = 3600
 

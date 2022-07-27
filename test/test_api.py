@@ -44,14 +44,14 @@ class testRedirectUrl(unittest.TestCase):
         self.assertEqual(response.location, "https://vmware.zoom.us/j/98419544431?pwd=WXdTNkdLZDNXZ0IrUjZNNDNVRTFxdz09#success")
         print("Successfully Passed Test")
 
-    @mock.patch('service.getLongUrl', return_value= ("Page Not Found",404))
+    @mock.patch('service.getLongUrl', return_value= ("http://localhost:4200/NOT_FOUND",404))
     # check for response code 404 when Long URL not foung to redirect to
     def test_redirectUrl2(self, mock_check_output):
         print("Started test test_redirectUrl2")
         tester = app.test_client(self)
         response = tester.get("/jgnYRv")
-        self.assertEqual(response.status_code, 404)
-        assert b'Page Not Found' in response.data
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, constants.PAGE_NOT_FOUND)
         print("Successfully Passed Test")
 
 class testMyUrls(unittest.TestCase):
