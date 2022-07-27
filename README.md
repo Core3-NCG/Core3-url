@@ -19,5 +19,9 @@ python3 src/app.py
 
 ## Run the tests:-
 ```
-python3 test/api_test.py
+cd test
+coverage run test_api.py
+coverage run -a test_encode.py
+coverage run -a test_service.py
+coverage report
 ```
