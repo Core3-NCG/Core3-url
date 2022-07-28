@@ -66,11 +66,6 @@ class testGetUrl(unittest.TestCase):
         print("Started test test_getUrlList")
         self.assertEqual(service.getUrlList("aditi"), ("Something went wrong, try again later",constants.INTERNAL_SERVER_ERROR))
 
-    # @mock.patch('db_url.urls_for_user', return_value=(['http://127.0.0.1:5000/AsvVCZ'],constants.OK))
-    # def test_getUrlList3(self, mock_test_output):
-    #     print("Started test test_getUrlList1")
-    #     self.assertEqual(service.getUrlList("aditi")['originalUrl'], 'https://vmware.zoom.us/j/98419544431?pwd=WXdTNkdLZDNXZ0IrUjZNNDNVRTFxdz09#success')
-
 
 class testRegister(unittest.TestCase):
 
