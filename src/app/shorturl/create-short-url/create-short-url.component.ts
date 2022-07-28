@@ -22,7 +22,6 @@ export class CreateShortUrlComponent implements OnInit {
   isFormValid: boolean = false;
   isLoading: boolean = false;
   shortUrl: string = '';
-  previous = {};
   constructor(
     private _formBuilder: FormBuilder,
     private _clipboardService: ClipboardService,
@@ -43,15 +42,9 @@ export class CreateShortUrlComponent implements OnInit {
     this.urlForm.get('expirationTimeType')?.valueChanges.subscribe(() => {
       this.onexpirationTimeTypeChanges();
     });
-    // this.urlForm.valueChanges.subscribe(() => {
-    //   // if (this.previous && this.previous !== this.urlForm.value) {
-    //   //   this.isFormValid = false;
-    //   // }
-    // });
   }
 
   onSubmit() {
-    this.previous = this.urlForm.value;
     this.isFormValid = false;
     let localStorageUrlKey =
       this.urlForm.get('originalUrl')?.value +

@@ -26,7 +26,11 @@
               readonly
             />
           </clr-input-container>
-          <p *ngIf="urlDetails.expirationTime"><code class="clr-code">Expires in {{urlDetails.expirationTime}} days</code></p>
+          <p *ngIf="urlDetails.expirationTime">
+            <code class="clr-code"
+              >Expires in {{ urlDetails.expirationTime }} days</code
+            >
+          </p>
         </div>
       </div>
       <div class="card-footer">

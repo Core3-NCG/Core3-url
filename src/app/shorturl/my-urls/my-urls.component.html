@@ -1,30 +1,37 @@
-
+<div *ngIf="this.urlDetailsPerPage.getValue().length === 0">
+  <h3>No URLs found</h3>
+</div>
 <div *ngFor="let urlDetails of urlDetailsPerPage | async">
-<app-urldetails [urlDetails]='urlDetails'></app-urldetails>
+  <app-urldetails [urlDetails]="urlDetails"></app-urldetails>
 </div>
-<div *ngIf="this.urlDetailsPerPage.getValue().length === 0
-">
-<h3>No URLs found</h3>
+<div class="pagination" *ngIf="this.urlDetailsPerPage.getValue().length !== 0">
+  <label class="labelinSelect">Urls per page</label>
+  <clr-select-container>
+    <select
+      clrSelect
+      name="page-size"
+      [(ngModel)]="currentPageSize"
+      (change)="pageSizeChange()"
+    >
+      <option *ngFor="let pageSize of pageSizes" [value]="pageSize">
+        {{ pageSize }}
+      </option>
+    </select>
+  </clr-select-container>
+  <button class="btn" (click)="previousPage()" [disabled]="isPrevious">
+    <clr-icon shape="arrow left"></clr-icon>
+
+    previous
+  </button>
+  <input
+    type="text"
+    class="inputdecor"
+    [(ngModel)]="pageNumber"
+    (input)="onPageChange()"
+  /><span class="pages-span"> / {{ numberOfPages }}</span>
+  <button class="btn" (click)="nextPage()" [disabled]="isNext">
+    Next<clr-icon shape="arrow right"></clr-icon>
+  </button>
 </div>
-<div style="
-display: flex;
-justify-content: flex-end;
-justify-self: center;
-bottom: 0px;
-margin-top: 3px;
-">
-    <button class="btn" (click)="previousPage()" [disabled]="isPrevious"><clr-icon class="left" shape="arrow" style="
-        transform: rotate(270deg);
-    "
-    ></clr-icon>
 
-        previous</button>
-    <button class="btn-primary btn">{{pageNumber}}</button>
-<button class=" btn" (click)="nextPage()" [disabled]="isNext">Next<clr-icon class="right" shape="arrow"></clr-icon>
-</button>
-</div>
-
-<span *ngIf="isLoading" class="spinner">
-    Loading...
-</span>
-
+<span *ngIf="isLoading" class="spinner"> Loading... </span>

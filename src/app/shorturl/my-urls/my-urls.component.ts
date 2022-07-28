@@ -19,14 +19,20 @@ export class MyUrlsComponent implements OnInit {
   isPrevious = false;
   isNext = false;
   isLoading = false;
-  urlDetailsPerPage:BehaviorSubject<UrlDetails[]> = new BehaviorSubject<UrlDetails[]>([]);
+  numberOfPages = 0;
+  pageSizes = [3, 6, 9];
+  currentPageSize = 3;
+  urlDetailsPerPage: BehaviorSubject<UrlDetails[]> = new BehaviorSubject<
+    UrlDetails[]
+  >([]);
   index = -1;
-  pageNumber:number=0;
-  constructor(private _urlService: UrlService,private _myurlPerPageService:MyurlPerPageService) {}
+  pageNumber: number = 0;
+  constructor(
+    private _urlService: UrlService,
+    private _myurlPerPageService: MyurlPerPageService
+  ) {}
   ngOnInit(): void {
-    console.log("in my urls");
     this.urlDetailsList = [];
-   // this._myurlPerPageService.ngOnInit();
     const userName: string = localStorage.getItem('userName')!;
     this.isLoading = true;
     this._urlService.getUrlsByUsername(userName).subscribe((details) => {
@@ -40,31 +46,48 @@ export class MyUrlsComponent implements OnInit {
         };
         this.urlDetailsList.push(urlDetails);
       });
-      console.log("url Details"+this.urlDetailsList.length)
-    this._myurlPerPageService.getUrlDetailsList(this.urlDetailsList);
-    this.nextPage();
+      const size: number = +this.currentPageSize;
+      this.numberOfPages = Math.round(this.urlDetailsList.length / size);
+      this._myurlPerPageService.getUrlDetailsList(this.urlDetailsList);
+      this.nextPage();
+      this.isLoading = false;
+    });
+  }
+  nextPage() {
+    this.isLoading = true;
+    const size: number = +this.currentPageSize;
+    this._myurlPerPageService.onNext(size).subscribe((details) => {
+      this.urlDetailsPerPage.next(details.urlDetailsList);
+      this.isPrevious = details.isPrevious;
+      this.isNext = details.isNext;
+      const size: number = +this.currentPageSize;
+      this.pageNumber = Math.floor(details.index / size + 1);
+      this.isLoading = false;
+    });
+  }
+  previousPage() {
+    this.isLoading = true;
+    const size: number = +this.currentPageSize;
+    this._myurlPerPageService.onPrevious(size).subscribe((details) => {
+      this.urlDetailsPerPage.next(details.urlDetailsList);
+      this.isPrevious = details.isPrevious;
+      this.isNext = details.isNext;
+      const size: number = +this.currentPageSize;
+      this.pageNumber = Math.floor(details.index / size + 1);
+    });
     this.isLoading = false;
-  });
   }
-  nextPage(){
-    this.isLoading = true;
-    this._myurlPerPageService.onNext(3).subscribe(details =>{
-      console.log(details);
-      this.urlDetailsPerPage.next(details.urlDetailsList);
-      this.isPrevious = details.isPrevious;
-      this.isNext = details.isNext;
-      this.pageNumber = Math.floor((details.index/3)+1);
-      this.isLoading = false;
-    });
+  onPageChange() {
+    if (this.pageNumber > 0 && this.pageNumber <= this.numberOfPages) {
+      const size: number = +this.currentPageSize;
+      this._myurlPerPageService.getDetailsByNumber(this.pageNumber, size);
+      this.nextPage();
+    }
   }
-  previousPage(){
-    this.isLoading = true;
-    this._myurlPerPageService.onPrevious(3).subscribe(details =>{
-      this.urlDetailsPerPage.next(details.urlDetailsList);
-      this.isPrevious = details.isPrevious;
-      this.isNext = details.isNext;
-      this.pageNumber = Math.floor((details.index/3)+1);
-      this.isLoading = false;
-    });
+  pageSizeChange() {
+    const size: number = +this.currentPageSize;
+    this._myurlPerPageService.onPageSizeChange();
+    this.numberOfPages = Math.ceil(this.urlDetailsList.length / size);
+    this.nextPage();
   }
 }

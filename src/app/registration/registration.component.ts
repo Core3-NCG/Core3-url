@@ -44,17 +44,15 @@ export class RegistrationComponent implements OnInit {
       userName: this.registerForm.get('userName')?.value,
       password: this.registerForm.get('password')?.value,
     });
-    if(result == 200)
-    {
-      localStorage.setItem("userName",this.registerForm.get("userName")?.value);
+    if (result == 200) {
+      localStorage.setItem(
+        'userName',
+        this.registerForm.get('userName')?.value
+      );
       this.router.navigate(['/home']);
-    }
-    else if (result == 409)
-    {
+    } else if (result == 409) {
       this.userExistsError = true;
-    }
-    else
-      this.registerForm.setErrors({"incorrect":true});
+    } else this.registerForm.setErrors({ incorrect: true });
   }
 
   passwordValidator(): ValidatorFn {
@@ -94,11 +92,11 @@ export class RegistrationComponent implements OnInit {
       const password = form.get('password')?.value;
       const confirmpassword = form.get('confirmpassword')?.value;
       if (password === confirmpassword)
-      form.get('confirmpassword')?.setErrors(null);
+        form.get('confirmpassword')?.setErrors(null);
       else
-      form.get('confirmpassword')?.setErrors(
-        {validation: 'Invalid passwords'}
-      );
+        form
+          .get('confirmpassword')
+          ?.setErrors({ validation: 'Invalid passwords' });
       return {};
     };
   }

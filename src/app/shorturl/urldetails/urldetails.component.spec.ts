@@ -9,7 +9,7 @@ describe('UrldetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[ClipboardModule],
+      imports: [ClipboardModule],
       declarations: [UrldetailsComponent],
     }).compileComponents();
   });

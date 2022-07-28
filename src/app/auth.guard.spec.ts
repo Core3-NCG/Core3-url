@@ -12,7 +12,7 @@ describe('AuthGuard', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule,RouterTestingModule]
+      imports: [HttpClientTestingModule, RouterTestingModule],
     });
     guard = TestBed.inject(AuthGuard);
     _authService = TestBed.get(AuthService);
@@ -23,9 +23,8 @@ describe('AuthGuard', () => {
   });
 
   it('should check if user logged in', () => {
-    spyOn(_authService,"isUserLoggedIn").and.returnValue(true);
+    spyOn(_authService, 'isUserLoggedIn').and.returnValue(true);
     expect(guard.canActivate()).toBeTrue();
     expect(_authService.isUserLoggedIn).toHaveBeenCalled();
   });
-
 });

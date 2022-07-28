@@ -11,7 +11,7 @@ interface User {
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private _httpClient: HttpClient,private _router:Router) {}
+  constructor(private _httpClient: HttpClient, private _router: Router) {}
 
   isUserLoggedIn(): boolean {
     return localStorage.getItem('userName') !== null;
@@ -28,33 +28,37 @@ export class AuthService {
   }
 
   async executeHttpRequest(user: User, apiName: string) {
-    let promiseToExecuteRequest = new Promise( (resolve, reject) => {
-
-      const res =this._httpClient.post(Constants.serverAddress+apiName
-        ,user
-        ,{headers: {'Content-Type': 'application/json'}
-        ,responseType: 'text',observe:'response'})
-        .subscribe( res=> {
-          resolve(res.status);
-        },
-        error => {
-          reject(error["status"]);
-        }
+    let promiseToExecuteRequest = new Promise((resolve, reject) => {
+      const res = this._httpClient
+        .post(Constants.serverAddress + apiName, user, {
+          headers: { 'Content-Type': 'application/json' },
+          responseType: 'text',
+          observe: 'response',
+        })
+        .subscribe(
+          (res) => {
+            resolve(res.status);
+          },
+          (error) => {
+            reject(error['status']);
+          }
         );
     });
 
-    let state:number=0;
+    let state: number = 0;
 
-    await promiseToExecuteRequest.then((result) =>{
-      state = typeof result == 'number' ? result: 0 ;
-    }).catch((result) =>{
-      state =  result;
-    });
+    await promiseToExecuteRequest
+      .then((result) => {
+        state = typeof result == 'number' ? result : 0;
+      })
+      .catch((result) => {
+        state = result;
+      });
 
     return state;
   }
 
-  logout(){
+  logout() {
     localStorage.removeItem('userName');
     localStorage.clear();
     this._router.navigate(['/login']);

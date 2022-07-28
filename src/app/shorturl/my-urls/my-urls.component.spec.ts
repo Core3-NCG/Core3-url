@@ -1,10 +1,11 @@
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { UrlService } from '../services/url.service';
 
 import { MyUrlsComponent } from './my-urls.component';
+import { MyurlPerPageService } from './myurl-per-page.service';
 interface UrlDetails {
   shortUrl: string;
   longUrl: string;
@@ -29,11 +30,14 @@ describe('MyUrlsComponent', () => {
     'getUrlsByUsername',
   ]);
   mockUrlService.getUrlsByUsername.and.returnValue(of(mockUrldetails));
+  const mockMyurlsPerPageService = jasmine.createSpyObj(MyurlPerPageService,['onPrevious','onNext','onPageSizeChange','getDetailsByNumber']);
+  mockMyurlsPerPageService.onNext.and.returnValue(of({}));
+  mockMyurlsPerPageService.onPrevious.and.returnValue(of({}));
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [MyUrlsComponent],
       imports: [HttpClientTestingModule],
-      providers: [{ provide: UrlService, useValue: mockUrlService }],
+      providers: [{ provide: UrlService, useValue: mockUrlService },{provide:MyurlPerPageService,useValue:mockMyurlsPerPageService}],
     }).compileComponents();
   });
 
@@ -67,4 +71,24 @@ describe('MyUrlsComponent', () => {
     ];
     expect(component.urlDetailsList).toEqual(urlDetailsList);
   });
+
+  it("on next page,get details from myUrlPageService",()=>{
+    component.nextPage();
+    expect(mockMyurlsPerPageService.onNext).toHaveBeenCalled();
+  });
+  it("on next page,get details from myUrlPageService",()=>{
+    component.previousPage();
+    expect(mockMyurlsPerPageService.onPrevious).toHaveBeenCalled();
+  });
+  it("on page size change,in a page urls may range in (0,pagesize)",()=>{
+    component.pageSizeChange();
+    expect(mockMyurlsPerPageService.onPageSizeChange).toHaveBeenCalled();
+  });
+  it("on page number change,specified page should be retrieved",()=>{
+    component.pageNumber = 1;
+    component.onPageChange();
+    expect(mockMyurlsPerPageService.getDetailsByNumber).toHaveBeenCalled();
+  });
+
+
 });
